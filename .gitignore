@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
+=======
+*.csv
+*.xlsx
+>>>>>>> bed055effa91541a0c47f577ea3c6084ab45fd60
