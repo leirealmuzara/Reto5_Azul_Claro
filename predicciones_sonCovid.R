@@ -7,7 +7,7 @@ df2 <- df2 %>%
 # Filtrar datos fuera del periodo de COVID-19
 # Supongamos que el periodo de COVID-19 es de 2020 a 2021
 df1 <- df1 %>%
-  filter(!(Year >= 2020 & Year <= 2021))
+  filter(!(Year >= 2020))
 
 # Visualizar los datos filtrados
 head(df1)
@@ -23,8 +23,8 @@ pib <- pib %>%
   filter(Month %in% c(3, 6, 9, 12))
 
 # Convertir a series temporales
-ts_ipc <- ts(ipc$Consumer.Price.Index..CPI., start = c(1996, 1), end = c(2022, 7), frequency = 12)
-ts_pib <- ts(pib$GDP.billion.currency.units, start = c(1996, 3), end = c(2022, 2), frequency = 4)
+ts_ipc <- ts(ipc$Consumer.Price.Index..CPI., start = c(1996, 1), end = c(2019, 12), frequency = 12)
+ts_pib <- ts(pib$GDP.billion.currency.units, start = c(1996, 3), end = c(2019, 4), frequency = 4)
 
 # Graficar las series temporales
 plot(ts_ipc, main = "Serie Temporal del IPC en Alemania", ylab = "IPC", xlab = "Tiempo")
@@ -66,11 +66,11 @@ library(forecast)
 
 # Ajustar el modelo ARIMA para IPC
 model_ipc <- auto.arima(ts_ipc)
-forecast_ipc <- forecast(model_ipc, h = 5) # Predecir 3 meses
+forecast_ipc <- forecast(model_ipc, h = 36) # Predecir 3 meses
 summary(forecast_ipc)
 # Ajustar el modelo ARIMA para PIB
 model_pib <- auto.arima(ts_pib)
-forecast_pib <- forecast(model_pib, h = 2) # Predecir 1 trimestre
+forecast_pib <- forecast(model_pib, h = 12) # Predecir 1 trimestre
 summary(forecast_pib)
 # Graficar pronósticos
 plot(forecast_ipc, main = "Pronóstico del IPC para el último trimestre de 2022")
