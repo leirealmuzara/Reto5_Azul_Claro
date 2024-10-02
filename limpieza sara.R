@@ -9,10 +9,12 @@ library(tseries)
 # Establecer directorio de trabajo
 setwd("D:/Business Data Analytics II/Casos Prácticos II/Reto5_Azul_Claro/Datos-20240913")
 
+dir()
 # Cargar datos
-df1 <- read.csv("pib_ipc_paises_punto2.csv")
-df2 <- read.csv("exogenas_paises_punto2.csv")
-df3 <- read.csv("unemployment_germany.csv")
+df1 <- read.csv("Datos-20240913/pib_ipc_
+                paises_punto2.csv")
+df2 <- read.csv("Datos-20240913/exogenas_paises_punto2.csv")
+df3 <- read.csv("Datos-20240913/unemployment_germany.csv")
 
 ########################### FILTRAR Y LIMPIAR DATOS ###########################
 
@@ -169,9 +171,11 @@ checkresiduals(modelo_arima_pib)
 
 # Predicción de IPC y PIB con ARIMA a 12 meses
 forecast_ipc <- forecast(modelo_arima_ipc, h = 12)
+summary(forecast_ipc)
 plot(forecast_ipc, main="Predicción del IPC con ARIMA")
 
 forecast_pib <- forecast(modelo_arima_pib, h = 12)
+summary(forecast_pib)
 plot(forecast_pib, main="Predicción del PIB con ARIMA")
 
 ########################### MODELO ARIMA PARA EXÓGENAS ###########################
