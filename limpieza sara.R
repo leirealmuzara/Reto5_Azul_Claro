@@ -8,7 +8,7 @@ library(tseries)
 
 # Establecer directorio de trabajo
 setwd("D:/Business Data Analytics II/Casos Prácticos II/Reto5_Azul_Claro/Datos-20240913")
-
+setwd("C:/Users/leire/OneDrive/Escritorio/Bda2/reto5/Nueva carpeta/Reto5_Azul_Claro/Datos-20240913")
 # Cargar datos
 df1 <- read.csv("pib_ipc_paises_punto2.csv")
 df2 <- read.csv("exogenas_paises_punto2.csv")
@@ -35,7 +35,7 @@ pib <- pib %>% filter(Month %in% c(3,6,9,12))
 ########################### SERIES TEMPORALES ###########################
 
 # Crear series temporales
-ts_ipc <- ts(ipc$Consumer.Price.Index..CPI., start = c(1996,1), end = c(2022,7), frequency = 12)
+ts_ipc <- ts(ipc$Consumer.Price.Index..CPI., start = c(1996,1), end = c(2022,2),frequency = 4)
 ts_pib <- ts(pib$GDP.billion.currency.units, start = c(1996,1), end = c(2022,2), frequency = 4)
 
 # Graficar series temporales
@@ -65,10 +65,12 @@ pacf(ts_pib, main = "PACF del PIB")
 
 # Descomposición de la serie de IPC
 descomposicion_ipc <- decompose(ts_ipc)
+random_ipc<-descomposicion_ipc$random#residuo para predecir
 plot(descomposicion_ipc)
 
 # Descomposición de la serie de PIB
 descomposicion_pib <- decompose(ts_pib)
+random_pib<-descomposicion_pib$random#residuo para predecir
 plot(descomposicion_pib)
 
 ########################### EXÓGENAS ###########################
@@ -106,11 +108,14 @@ pacf(ts_stock, main = "PACF del stock")
 # Descomposición de la oferta monetaria
 descomposicion_money <- decompose(ts_money)
 plot(descomposicion_money)
+random_money<-descomposicion_money$random#residuo predecir
 
 # Descomposición del índice bursátil
 descomposicion_stock <- decompose(ts_stock)
-plot(descomposicion_stock)
+random_stock<-descomposicion_stock$random#residuo predecir
 
+plot(descomposicion_stock)
+plot(descomposicion_stock$random)
 ########################### MODELOS NAIVE ###########################
 
 # Ajustar el modelo naive para oferta monetaria
@@ -157,15 +162,19 @@ pacf(diff_pib, main="PACF PIB Diferenciado")
 ########################### MODELO ARIMA ###########################
 
 # Ajustar modelos ARIMA para IPC y PIB
-modelo_arima_ipc <- auto.arima(ts_ipc)
+modelo_arima_ipc <- auto.arima(random_ipc)
 summary(modelo_arima_ipc)
 
-modelo_arima_pib <- auto.arima(ts_pib)
+modelo_arima_pib <- auto.arima(random_pib)
 summary(modelo_arima_pib)
 
 # Verificar los residuos de los modelos ARIMA
 checkresiduals(modelo_arima_ipc)
 checkresiduals(modelo_arima_pib)
+
+#añadir estacionalidad y tendencia a la serie
+predecir<-modelo_arima_ipc + descomposicion_ipc$seasonal + descomposicion_ipc$trend
+
 
 # Predicción de IPC y PIB con ARIMA a 12 meses
 forecast_ipc <- forecast(modelo_arima_ipc, h = 12)
@@ -199,10 +208,10 @@ acf(diff_stock, main="ACF del Índice Bursátil")
 pacf(diff_stock, main="PACF del Índice Bursátil")
 
 # Ajustar modelos ARIMA para las exógenas
-modelo_arima_money <- auto.arima(ts_money)
+modelo_arima_money <- auto.arima(random_money)
 summary(modelo_arima_money)
 
-modelo_arima_stock <- auto.arima(ts_stock)
+modelo_arima_stock <- auto.arima(random_stock)
 summary(modelo_arima_stock)
 
 # Verificar los residuos de los modelos ARIMA
