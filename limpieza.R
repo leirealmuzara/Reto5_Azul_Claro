@@ -30,7 +30,7 @@ pib<- pib %>%
 
 # Convertir a una serie temporal
 ts_ipc <- ts(ipc$Consumer.Price.Index..CPI., start = c(1996,1),end = c(2022,7), frequency = 12)
-ts_pib <- ts(pib$GDP.billion.currency.units, start = c(1996,3),end = c(2022,4), frequency = 4)
+ts_pib <- ts(pib$GDP.billion.currency.units, start = c(1996,1),end = c(2022,2), frequency = 4)
 ts_ipc
 ts_pib
 # Graficar la serie temporal
@@ -64,6 +64,17 @@ plot(descomposicion_ipc)
 
 descomposicion_pib <- decompose(ts_pib)
 plot(descomposicion_pib)
+
+#################################################
+#Ajustar el modelo naive para cada variable
+modelo_naive_ipc <- naive(ts_ipc, h = 5)
+summary(modelo_naive_ipc)
+plot(modelo_naive_ipc, main = "Predicción Naive del IPC")
+
+modelo_naive_pib <- naive(window(ts_pib,end=c(2022, 2)), h = 2)
+summary(modelo_naive_pib)
+plot(modelo_naive_pib, main = "Predicción Naive del PIB")
+
 
 ###########################EXOGENAS######################################
 head(df2)
