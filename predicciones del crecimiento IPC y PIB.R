@@ -86,22 +86,22 @@ adf.test(ts_ipc)
 adf.test(ts_pib)
 
 # Diferenciar las series para eliminar tendencia
-diff_ipc <- diff(ts_ipc)
-diff_pib <- diff(ts_pib)
+ts_ipc <- diff(ts_ipc)
+ts_pib <- diff(ts_pib)
 
 # Verificar nuevamente la estacionariedad
-adf.test(diff_ipc)
-adf.test(diff_pib)
+adf.test(ts_ipc)
+adf.test(ts_pib)
 
 # Graficar series diferenciadas
-plot(diff_ipc, main="IPC Diferenciado")
-plot(diff_pib, main="PIB Diferenciado")
+plot(ts_ipc, main="IPC Diferenciado")
+plot(ts_pib, main="PIB Diferenciado")
 
 # ACF y PACF para IPC y PIB diferenciados
-acf(diff_ipc, main="ACF IPC Diferenciado")
-pacf(diff_ipc, main="PACF IPC Diferenciado")
-acf(diff_pib, main="ACF PIB Diferenciado")
-pacf(diff_pib, main="PACF PIB Diferenciado")
+acf(ts_ipc, main="ACF IPC Diferenciado")
+pacf(ts_ipc, main="PACF IPC Diferenciado")
+acf(ts_pib, main="ACF PIB Diferenciado")
+pacf(ts_pib, main="PACF PIB Diferenciado")
 
 ########################### MIRAR ACCURACY PIB ###########################
 #queremos predecir datos que ya tenemos para evaluar los modelos
