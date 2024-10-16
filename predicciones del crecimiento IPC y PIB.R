@@ -29,6 +29,7 @@ pib <- pib %>% filter(Month %in% c(3,6,9,12))
 # Calcular el crecimiento interanual respecto al año anterior
 pib$Crecimiento_Interanual <- (pib$GDP.billion.currency.units / lag(pib$GDP.billion.currency.units, 4) - 1) * 100
 ipc$Crecimiento_Interanual <- (ipc$Consumer.Price.Index..CPI. / lag(ipc$Consumer.Price.Index..CPI., 12) - 1) * 100
+
 ########################### SERIES TEMPORALES ###########################
 
 # Crear series temporales
