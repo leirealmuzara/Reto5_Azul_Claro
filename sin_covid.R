@@ -66,6 +66,7 @@ random_ipc <- descomposicion_ipc$random
 descomposicion_ipc$seasonal
 descomposicion_ipc$trend
 
+
 # Descomposición de las serie de PIB
 descomposicion_pib <- decompose(ts_pib)
 plot(descomposicion_pib)
@@ -178,27 +179,19 @@ accuracy_ar_pib<-accuracy(ar_pib_forecast,test_pib) #0.7427427
 accuracy_arma_pib<-accuracy(arma_pib_forecast,test_pib) #0.7550947 
 accuracy_arima_pib<-accuracy(arima_forecast_pib,test_pib) #0.5402672 --> ES LO MEJOR 
 
+######################################################
 
+# Verificar los residuos de los modelos ARIMA
+checkresiduals(modelo_arima_pib)
+#añadir estacionalidad y tendencia a la serie
 
-
-
-
-
-
-# Predecir el último trimestre de 2022
-# Usar modelo ARIMA para pronosticar
-library(forecast)
-
-# Ajustar el modelo ARIMA para IPC
-model_ipc <- auto.arima(random_ipc)
-forecast_ipc <- forecast(model_ipc, h = 36) # Predecir 3 meses
-summary(forecast_ipc)
-# Ajustar el modelo ARIMA para PIB
-model_pib <- auto.arima(random_pib)
-forecast_pib <- forecast(model_pib, h = 12) # Predecir 1 trimestre
+# Predicción de PIB con ARIMA a 12 meses
+modelo_arima_pib <- auto.arima(ts_pib)
+forecast_pib <- forecast(modelo_arima_pib, h = 12)
 summary(forecast_pib)
-# Graficar pronósticos
-plot(forecast_ipc, main = "Pronóstico del IPC para el último trimestre de 2022")
-plot(forecast_pib, main = "Pronóstico del PIB para el último trimestre de 2022")
+plot(forecast_pib, main="Predicción del PIB con ARIMA")
+abline(h = 0, col = "red", lty = 2)
+
+
 
 

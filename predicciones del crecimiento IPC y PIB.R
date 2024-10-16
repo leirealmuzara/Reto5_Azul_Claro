@@ -169,22 +169,21 @@ accuracy_arima_ipc <- accuracy(arima_forecast_ipc, test_ipc) #mejor
 
 ######################################################
 
-#mirar arimax con variables exogenas
-#plotear resultados con autoplot
-
-#parametros y modelos de ajuste
-
 # Verificar los residuos de los modelos ARIMA
 checkresiduals(modelo_arima_pib)
 checkresiduals(modelo_arima_ipc)
 #añadir estacionalidad y tendencia a la serie
 
 # Predicción de IPC y PIB con ARIMA a 12 meses
-forecast_ipc <- forecast(ts_ipc, h = 4)
+modelo_arima_ipc <-auto.arima(ts_ipc)
+forecast_ipc <- forecast(modelo_arima_ipc, h = 4)
+summary(forecast_ipc)
 plot(forecast_ipc, main="Predicción del IPC con ARIMA")
 abline(h = 0, col = "red", lty = 2)
 
-forecast_pib <- forecast(ts_pib, h = 1)
+modelo_arima_pib <- auto.arima(ts_pib)
+forecast_pib <- forecast(modelo_arima_pib, h = 1)
+summary(forecast_pib)
 plot(forecast_pib, main="Predicción del PIB con ARIMA")
 abline(h = 0, col = "red", lty = 2)
 
