@@ -82,22 +82,22 @@ adf.test(ts_ipc)
 adf.test(ts_pib)
 
 # Diferenciar las series para eliminar tendencia
-diff_ipc<-diff(ts_ipc)
-diff_pib<-diff(ts_pib)
+ts_ipc<-diff(ts_ipc)
+ts_pib<-diff(ts_pib)
 
 # Verificar nuevamente la estacionariedad
-adf.test(diff_ipc)
-adf.test(diff_pib)
+adf.test(ts_ipc)
+adf.test(ts_pib)
 
 # Graficar series diferenciadas
-plot(diff_ipc, main="IPC Diferenciado")
-plot(diff_pib, main="PIB Diferenciado")
+plot(ts_ipc, main="IPC Diferenciado")
+plot(ts_pib, main="PIB Diferenciado")
 
 # ACF y PACF para IPC y PIB diferenciados
-acf(diff_ipc, main="ACF IPC Diferenciado")
-pacf(diff_ipc, main="PACF IPC Diferenciado")
-acf(diff_pib, main="ACF PIB Diferenciado")
-pacf(diff_pib, main="PACF PIB Diferenciado")
+acf(ts_ipc, main="ACF IPC Diferenciado")
+pacf(ts_ipc, main="PACF IPC Diferenciado")
+acf(ts_pib, main="ACF PIB Diferenciado")
+pacf(ts2_pib, main="PACF PIB Diferenciado")
 
 
 #####COMPROBAR ACCURACY#####
@@ -187,7 +187,7 @@ checkresiduals(modelo_arima_pib)
 
 # Predicción de PIB con ARIMA a 12 meses
 modelo_arima_pib <- auto.arima(ts_pib)
-forecast_pib <- forecast(modelo_arima_pib, h = 12)
+forecast_pib <- forecast(modelo_arima_pib, h = 4 )
 summary(forecast_pib)
 plot(forecast_pib, main="Predicción del PIB con ARIMA")
 abline(h = 0, col = "red", lty = 2)
