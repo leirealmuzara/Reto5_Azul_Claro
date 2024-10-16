@@ -7,39 +7,31 @@ library(fpp2)
 library(tseries)
 
 dir()
-df1<-read.csv("Datos-20240913/pib_ipc_paises_punto2.csv")
-df2<-read.csv("Datos-20240913/exogenas_paises_punto2.csv")
-df3<-read.csv("Datos-20240913/unemployment_germany.csv")
+source("predicciones del crecimiento IPC y PIB.R")
 
-# Filtrar datos para Alemania
-df1 <- df1 %>%
-  filter(Code == "DEU")
-df2 <- df2 %>%
-  filter(Code == "DEU")
 
 # Filtrar datos fuera del periodo de COVID-19
 # Supongamos que el periodo de COVID-19 es de 2020 a 2022
-df1 <- df1 %>%
+pib <- pib %>%
+  filter(!(Year >= 2020))
+ipc <- ipc %>%
   filter(!(Year >= 2020))
 
 # Visualizar los datos filtrados
-head(df1)
-str(df1)
-sum(is.na(df1))
+head(pib)
+str(pib)
+sum(is.na(pib))
 
-# Preparar datos de IPC y PIB
-ipc <- df1[, -c(1, 3, 6)]
-pib <- df1[, -c(1, 3, 7)]
+head(ipc)
+str(ipc)
+sum(is.na(ipc))
 
-# Filtrar PIB por trimestre
-pib <- pib %>%
-  filter(Month %in% c(3, 6, 9, 12))
 
 #####SERIES TEMPORALES####
 
 #crear serie temporal
-ts_ipc <- ts(ipc$Consumer.Price.Index..CPI., start = c(1996, 1), end = c(2019, 12), frequency = 12)
-ts_pib <- ts(pib$GDP.billion.currency.units, start = c(1996, 3), end = c(2019, 4), frequency = 4)
+ts_ipc <- ts(ipc$Crecimiento_Interanual, start = c(1996, 1), end = c(2019, 12), frequency = 12)
+ts_pib <- ts(pib$Crecimiento_Interanual, start = c(1996, 3), end = c(2019, 4), frequency = 4)
 
 # Graficar las series temporales
 plot(ts_ipc, main = "Serie Temporal del IPC en Alemania", ylab = "IPC", xlab = "Tiempo")
@@ -56,6 +48,9 @@ sum(is.na(ts_ipc))
 ####ANALISIS DE AUTOCORRELACION####
 
 #ACF y PACF
+ts_ipc <- na.omit(ts_ipc)
+ts_pib <- na.omit(ts_pib)
+
 acf(ts_ipc, main = "ACF del IPC")
 pacf(ts_ipc, main = "PACF del IPC")
 
@@ -135,13 +130,13 @@ summary(modelo_arima_ipc)
 arima_forecast_ipc<-forecast(modelo_arima_ipc,h=length(test_ipc))
 
 #calcular precisión de modelos de predicción
-accuracy_drift_ipc<-accuracy(drift_ipc,test_ipc) 
-accuracy_snaive_ipc<-accuracy(snaive_ipc,test_ipc) 
-accuracy_naive_ipc<-accuracy(naive_ipc,test_ipc) 
-accuracy_ma_ipc<-accuracy(ma_ipc,test_ipc) 
-accuracy_ar_ipc<-accuracy(ar_ipc_forecast,test_ipc) 
-accuracy_arma_ipc<-accuracy(arma_ipc_forecast,test_ipc) 
-accuracy_arima_ipc<-accuracy(arima_forecast_ipc,test_ipc) 
+accuracy_drift_ipc<-accuracy(drift_ipc,test_ipc) #0.04575025
+accuracy_snaive_ipc<-accuracy(snaive_ipc,test_ipc)#0.0349325
+accuracy_naive_ipc<-accuracy(naive_ipc,test_ipc)  #0.0349325    --> ES EL MEJOR
+accuracy_ma_ipc<-accuracy(ma_ipc,test_ipc) #0.09749173 
+accuracy_ar_ipc<-accuracy(ar_ipc_forecast,test_ipc) #0.09738451 
+accuracy_arma_ipc<-accuracy(arma_ipc_forecast,test_ipc) #0.09733092 
+accuracy_arima_ipc<-accuracy(arima_forecast_ipc,test_ipc) #0.1172250 
 
 
 #PIB
@@ -171,16 +166,17 @@ arma_pib_forecast<-forecast(arma_pib,h=length(test_pib))
 #arima
 modelo_arima_pib <- auto.arima(train_pib)
 summary(modelo_arima_pib)
-arima_forecast_pib<-forecast(modelo_arima_pib,h=length(test_pib))
+arima_forecast_pib<-forecast(modelo_arima_pib,h=36)
+summary(arima_forecast_pib)
 
 #calcular precisión de modelos de predicción
-accuracy_drift_pib<-accuracy(drift_pib,test_pib) 
-accuracy_snaive_pib<-accuracy(snaive_pib,test_pib) 
-accuracy_naive_pib<-accuracy(naive_pib,test_pib) 
-accuracy_ma_pib<-accuracy(ma_pib,test_pib) 
-accuracy_ar_pib<-accuracy(ar_pib_forecast,test_pib) 
-accuracy_arma_pib<-accuracy(arma_pib_forecast,test_pib) 
-accuracy_arima_pib<-accuracy(arima_forecast_pib,test_pib)  
+accuracy_drift_pib<-accuracy(drift_pib,test_pib) #1.312669 
+accuracy_snaive_pib<-accuracy(snaive_pib,test_pib) #1.246297 
+accuracy_naive_pib<-accuracy(naive_pib,test_pib)  #1.246297 
+accuracy_ma_pib<-accuracy(ma_pib,test_pib) #0.7416875 
+accuracy_ar_pib<-accuracy(ar_pib_forecast,test_pib) #0.7427427 
+accuracy_arma_pib<-accuracy(arma_pib_forecast,test_pib) #0.7550947 
+accuracy_arima_pib<-accuracy(arima_forecast_pib,test_pib) #0.5402672 --> ES LO MEJOR 
 
 
 

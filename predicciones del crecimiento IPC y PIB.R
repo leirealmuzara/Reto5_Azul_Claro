@@ -7,7 +7,7 @@ library(fpp2)
 library(tseries)
 
 # Cargar datos
-df1 <- read.csv("pib_ipc_paises_punto2.csv")
+df1 <- read.csv("Datos-20240913/pib_ipc_paises_punto2.csv")
 
 ########################### FILTRAR Y LIMPIAR DATOS ###########################
 
@@ -188,7 +188,6 @@ abline(h = 0, col = "red", lty = 2)
 forecast_pib <- forecast(ts_pib, h = 1)
 plot(forecast_pib, main="Predicción del PIB con ARIMA")
 abline(h = 0, col = "red", lty = 2)
-
 
 
 
