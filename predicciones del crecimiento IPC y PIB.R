@@ -183,7 +183,7 @@ plot(forecast_ipc, main="Predicción del IPC con ARIMA")
 abline(h = 0, col = "red", lty = 2)
 
 modelo_arima_pib <- auto.arima(ts_pib)
-forecast_pib <- forecast(modelo_arima_pib, h = 1)
+forecast_pib <- forecast(modelo_arima_pib, h = 2)
 summary(forecast_pib)
 plot(forecast_pib, main="Predicción del PIB con ARIMA")
 abline(h = 0, col = "red", lty = 2)

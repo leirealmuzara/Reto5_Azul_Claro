@@ -131,13 +131,13 @@ summary(modelo_arima_ipc)
 arima_forecast_ipc<-forecast(modelo_arima_ipc,h=length(test_ipc))
 
 #calcular precisión de modelos de predicción
-accuracy_drift_ipc<-accuracy(drift_ipc,test_ipc) #0.04575025
-accuracy_snaive_ipc<-accuracy(snaive_ipc,test_ipc)#0.0349325
-accuracy_naive_ipc<-accuracy(naive_ipc,test_ipc)  #0.0349325    --> ES EL MEJOR
-accuracy_ma_ipc<-accuracy(ma_ipc,test_ipc) #0.09749173 
-accuracy_ar_ipc<-accuracy(ar_ipc_forecast,test_ipc) #0.09738451 
-accuracy_arma_ipc<-accuracy(arma_ipc_forecast,test_ipc) #0.09733092 
-accuracy_arima_ipc<-accuracy(arima_forecast_ipc,test_ipc) #0.1172250 
+accuracy_drift_ipc<-accuracy(drift_ipc,test_ipc) #0.33044675 
+accuracy_snaive_ipc<-accuracy(snaive_ipc,test_ipc)#0.5250969 
+accuracy_naive_ipc<-accuracy(naive_ipc,test_ipc)  #0.3304480    
+accuracy_ma_ipc<-accuracy(ma_ipc,test_ipc) #0.32001457 
+accuracy_ar_ipc<-accuracy(ar_ipc_forecast,test_ipc) #0.28267833 
+accuracy_arma_ipc<-accuracy(arma_ipc_forecast,test_ipc) #0.28267206 
+accuracy_arima_ipc<-accuracy(arima_forecast_ipc,test_ipc) #0.2067668 --> ES EL MEJOR  
 
 
 #PIB
@@ -171,16 +171,28 @@ arima_forecast_pib<-forecast(modelo_arima_pib,h=36)
 summary(arima_forecast_pib)
 
 #calcular precisión de modelos de predicción
-accuracy_drift_pib<-accuracy(drift_pib,test_pib) #1.312669 
-accuracy_snaive_pib<-accuracy(snaive_pib,test_pib) #1.246297 
-accuracy_naive_pib<-accuracy(naive_pib,test_pib)  #1.246297 
-accuracy_ma_pib<-accuracy(ma_pib,test_pib) #0.7416875 
-accuracy_ar_pib<-accuracy(ar_pib_forecast,test_pib) #0.7427427 
-accuracy_arma_pib<-accuracy(arma_pib_forecast,test_pib) #0.7550947 
-accuracy_arima_pib<-accuracy(arima_forecast_pib,test_pib) #0.5402672 --> ES LO MEJOR 
+accuracy_drift_pib<-accuracy(drift_pib,test_pib) #1.265945 
+accuracy_snaive_pib<-accuracy(snaive_pib,test_pib) #1.344134  
+accuracy_naive_pib<-accuracy(naive_pib,test_pib)  #1.266053  
+accuracy_ma_pib<-accuracy(ma_pib,test_pib) #0.8241532  
+accuracy_ar_pib<-accuracy(ar_pib_forecast,test_pib) #0.8113892  
+accuracy_arma_pib<-accuracy(arma_pib_forecast,test_pib) #0.7092525 
+accuracy_arima_pib<-accuracy(arima_forecast_pib,test_pib) #0.6248854  --> ES LO MEJOR 
 
-######################################################
+################PREDICCIONES######################################
+#IPC
+# Verificar los residuos de los modelos ARIMA
+checkresiduals(modelo_arima_ipc)
+#añadir estacionalidad y tendencia a la serie
 
+# Predicción de IPC con ARIMA a 12 meses
+modelo_arima_ipc <- auto.arima(ts_ipc)
+forecast_ipc <- forecast(modelo_arima_ipc, h = 4 )
+summary(forecast_ipc)
+plot(forecast_ipc, main="Predicción del IPC con ARIMA")
+abline(h = 0, col = "red", lty = 2)
+
+#PIB
 # Verificar los residuos de los modelos ARIMA
 checkresiduals(modelo_arima_pib)
 #añadir estacionalidad y tendencia a la serie
