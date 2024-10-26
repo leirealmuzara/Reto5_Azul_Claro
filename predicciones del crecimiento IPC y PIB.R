@@ -51,7 +51,6 @@ sum(is.na(ts_ipc))
 
 
 ########################### ANÁLISIS DE AUTOCORRELACIÓN ###########################
-
 # ACF y PACF para IPC
 ts_ipc <- na.omit(ts_ipc)
 ts_pib <- na.omit(ts_pib)
