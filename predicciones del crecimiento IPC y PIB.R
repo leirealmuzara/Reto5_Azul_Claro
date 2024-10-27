@@ -52,7 +52,6 @@ sum(is.na(ts_ipc))
 
 
 ########################### ANÁLISIS DE AUTOCORRELACIÓN ###########################
-
 # ACF y PACF para IPC
 ts_ipc <- na.omit(ts_ipc)
 ts_pib <- na.omit(ts_pib)
@@ -184,9 +183,9 @@ checkresiduals(modelo_arima_pib)
 checkresiduals(modelo_arima_ipc)
 #añadir estacionalidad y tendencia a la serie
 
-# Predicción de IPC y PIB con ARIMA a 12 meses
+# Predicción de IPC y PIB con ARIMA a 2 trimestres
 modelo_arima_ipc <-auto.arima(ts_ipc)
-forecast_ipc <- forecast(modelo_arima_ipc, h = 4)
+forecast_ipc <- forecast(modelo_arima_ipc, h = 2)
 summary(forecast_ipc)
 plot(forecast_ipc, main="Predicción del IPC con ARIMA")
 abline(h = 0, col = "red", lty = 2)
