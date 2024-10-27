@@ -25,15 +25,16 @@ pib <- df1[,-c(1,3,7)] # Eliminar columnas irrelevantes para PIB
 
 # Filtrar datos trimestrales para PIB
 pib <- pib %>% filter(Month %in% c(3,6,9,12))
+ipc <- ipc %>% filter(Month %in% c(3,6,9,12))
 
 # Calcular el crecimiento interanual respecto al año anterior
 pib$Crecimiento_Interanual <- (pib$GDP.billion.currency.units / lag(pib$GDP.billion.currency.units, 4) - 1) * 100
-ipc$Crecimiento_Interanual <- (ipc$Consumer.Price.Index..CPI. / lag(ipc$Consumer.Price.Index..CPI., 12) - 1) * 100
+ipc$Crecimiento_Interanual <- (ipc$Consumer.Price.Index..CPI. / lag(ipc$Consumer.Price.Index..CPI., 4) - 1) * 100
 
 ########################### SERIES TEMPORALES ###########################
 
 # Crear series temporales
-ts_ipc <- ts(ipc$Crecimiento_Interanual, start = c(1996,1), end = c(2022,7), frequency = 12) #asi no coge los dos ultimos trimestres
+ts_ipc <- ts(ipc$Crecimiento_Interanual, start = c(1996,1), end = c(2022,2), frequency = 4) #asi no coge los dos ultimos trimestres
 ts_pib <- ts(pib$Crecimiento_Interanual, start = c(1996,1), end = c(2022,2), frequency = 4)
 
 # Graficar series temporales
@@ -90,8 +91,10 @@ ts_ipc <- diff(ts_ipc)
 ts_pib <- diff(ts_pib)
 
 # Verificar nuevamente la estacionariedad
-adf.test(ts_ipc)
-adf.test(ts_pib)
+adf1 <- adf.test(ts_ipc)
+adf2<- adf.test(ts_pib)
+kpsstest1 <- kpss.test(ts_ipc)
+kpsstest2 <- kpss.test(ts_pib)
 
 # Graficar series diferenciadas
 plot(ts_ipc, main="IPC Diferenciado")
@@ -103,14 +106,20 @@ pacf(ts_ipc, main="PACF IPC Diferenciado")
 acf(ts_pib, main="ACF PIB Diferenciado")
 pacf(ts_pib, main="PACF PIB Diferenciado")
 
+#Para verificar:
+if (adf1$p.value < 0.05) {print("Serie estacionaria")} else {print("Serie NO estacionaria")}
+if (adf2$p.value < 0.05) {print("Serie estacionaria")} else {print("Serie NO estacionaria")}
+if (kpsstest1$p.value < 0.05) {print("Serie NO estacionaria")} else {print("Serie estacionaria")}
+if (kpsstest2$p.value < 0.05) {print("Serie NO estacionaria")} else {print("Serie estacionaria")}
+
 ########################### MIRAR ACCURACY PIB ###########################
 #queremos predecir datos que ya tenemos para evaluar los modelos
 #separar datos en train y test
-train_ipc<-window(random_ipc,start=c(1996,7),end=c(2021,1))
-test_ipc<-window(random_ipc,start=c(2021,2),end=c(2022,1))
+train_ipc<-window(ts_ipc,start=c(1997,1),end=c(2020,4))
+test_ipc<-window(ts_ipc,start=c(2021,1),end=c(2022,2))
 
-train_pib<-window(random_pib,start=c(1996,7),end=c(2021,1))
-test_pib<-window(random_pib,start=c(2021,2),end=c(2022,1))
+train_pib<-window(ts_pib,start=c(1997,1),end=c(2020,4))
+test_pib<-window(ts_pib,start=c(2021,1),end=c(2022,2))
 
 # Ajustar modelos para IPC y PIB
 #naive
