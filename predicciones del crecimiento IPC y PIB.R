@@ -7,9 +7,10 @@ library(fpp2)
 library(tseries)
 
 # Cargar datos
-df1 <- read.csv("Datos-20240913/pib_ipc_paises_punto2.csv")
-exogenas <- read.csv("Datos-20240913/exogenas_paises_punto2.csv")
-paro<- read.csv("Datos-20240913/unemployment_germany.csv")
+setwd("C:/Users/leire/OneDrive/Escritorio/Bda2/reto5/Nueva carpeta/Reto5_Azul_Claro/Datos-20240913")
+df1 <- read.csv("pib_ipc_paises_punto2.csv")
+exogenas <- read.csv("exogenas_paises_punto2.csv")
+paro<- read.csv("unemployment_germany.csv")
 
 ########################### FILTRAR Y LIMPIAR DATOS ###########################
 
@@ -335,28 +336,28 @@ plot(forecast_arimax2, main="Predicción ARIMAX")
 
 ############################### ACCURACY ###############################
 
-accuracy(test_pib, modelo_ipc) 
-accuracy(test_pib, modelo_bolsa)
-accuracy(test_pib, modelo_oferta)
-accuracy(test_pib, modelo_paro)
+accuracy(test_pib, modelo_ipc)  
+accuracy(test_pib, modelo_bolsa) 
+accuracy(test_pib, modelo_oferta) 
+accuracy(test_pib, modelo_paro) #Este el mejor de arimax 
 
-accuracy(test_pib, modelo_arimax2) #Este el mejor de arimax
+accuracy(test_pib, modelo_arimax2)  
 
-accuracy_drift_pib<-accuracy(drift_pib,test_pib) 
-accuracy_snaive_pib<-accuracy(snaive_pib,test_pib) 
-accuracy_naive_pib<-accuracy(naive_pib,test_pib) 
-accuracy_ma_pib<-accuracy(ma_pib,test_pib) 
-accuracy_ar_pib<-accuracy(ar_pib_forecast,test_pib) 
-accuracy_arma_pib<-accuracy(arma_pib_forecast,test_pib) 
-accuracy_arima_pib<-accuracy(arima_forecast_pib,test_pib) #mejor RMSE de test más bajo
+accuracy(drift_pib,test_pib)  
+accuracy(snaive_pib,test_pib)  
+accuracy(naive_pib,test_pib)  
+accuracy(ma_pib,test_pib)  
+accuracy(ar_pib_forecast,test_pib)  
+accuracy(arma_pib_forecast,test_pib)  
+accuracy(arima_forecast_pib,test_pib) #MAPE mas bajo
 
-accuracy_drift_ipc <- accuracy(drift_ipc, test_ipc) 
-accuracy_snaive_ipc <- accuracy(snaive_ipc, test_ipc) 
-accuracy_naive_ipc <- accuracy(naive_ipc, test_ipc) 
-accuracy_ma_ipc <- accuracy(ma_ipc, test_ipc) 
-accuracy_ar_ipc <- accuracy(ar_ipc_forecast, test_ipc) 
-accuracy_arma_ipc <- accuracy(arma_ipc_forecast, test_ipc) 
-accuracy_arima_ipc <- accuracy(arima_forecast_ipc, test_ipc) #mejor
+accuracy(drift_ipc, test_ipc)
+accuracy(snaive_ipc, test_ipc)  
+accuracy(naive_ipc, test_ipc)  
+accuracy(ma_ipc, test_ipc)  
+accuracy(ar_ipc_forecast, test_ipc)  
+accuracy(arma_ipc_forecast, test_ipc) 
+accuracy(arima_forecast_ipc, test_ipc)
 
 
 
