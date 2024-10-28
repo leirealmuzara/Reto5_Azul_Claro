@@ -6,7 +6,11 @@ library(dplyr)
 library(fpp2)
 library(tseries)
 library(tidyr)
+<<<<<<< HEAD
+dir()
+=======
 
+>>>>>>> de4d3d895feca2781ed8b8ea06168eebf4c7acde
 # Cargar datos
 df1 <- read.csv("Datos-20240913/pib_ipc_paises_punto2.csv")
 exogenas <- read.csv("Datos-20240913/exogenas_paises_punto2.csv")
@@ -383,6 +387,8 @@ forecast_pib <- forecast(modelo_arima_pib, h = 2)
 summary(forecast_pib)
 plot(forecast_pib, main="Predicción del PIB con ARIMA")
 abline(h = 0, col = "red", lty = 2)
+
+
 
 
 
