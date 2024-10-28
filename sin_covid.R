@@ -6,9 +6,23 @@ library(dplyr)
 library(fpp2)
 library(tseries)
 
-dir()
-source("predicciones del crecimiento IPC y PIB.R")
+# Cargar datos
+df1 <- read.csv("Datos-20240913/pib_ipc_paises_punto2.csv")
 
+########################### FILTRAR Y LIMPIAR DATOS ###########################
+
+# Filtrar Alemania
+df1 <- df1 %>% filter(Code == "DEU")
+
+#Eliminar columnas irrelevantes
+df1 <- df1[,-c(1,3)]
+
+# Filtrar datos trimestrales
+df1 <- df1 %>% filter(Month %in% c(3,6,9,12))
+
+#crear df para pib y ipc
+pib <- df1[,-5]
+ipc <- df1[,-4]
 
 # Filtrar datos fuera del periodo de COVID-19
 # Supongamos que el periodo de COVID-19 es de 2020 a 2022
@@ -26,11 +40,14 @@ head(ipc)
 str(ipc)
 sum(is.na(ipc))
 
+#crear columna para el crecimiento interanual
+pib$Crecimiento_Interanual<- (pib$GDP.billion.currency.units / lag(pib$GDP.billion.currency.units, 4) - 1) * 100
+ipc$Crecimiento_Interanual <- (ipc$Consumer.Price.Index..CPI. / lag(ipc$Consumer.Price.Index..CPI., 4) - 1) * 100
 
 #####SERIES TEMPORALES####
 
 #crear serie temporal
-ts_ipc <- ts(ipc$Crecimiento_Interanual, start = c(1996, 1), end = c(2019, 12), frequency = 12)
+ts_ipc <- ts(ipc$Crecimiento_Interanual, start = c(1996, 3), end = c(2019, 4), frequency = 4)
 ts_pib <- ts(pib$Crecimiento_Interanual, start = c(1996, 3), end = c(2019, 4), frequency = 4)
 
 # Graficar las series temporales
@@ -212,3 +229,4 @@ forecast_pib_table <- data.frame(forecast_pib)
 row.names(forecast_pib_table) <- gsub("2020", "2022", row.names(forecast_pib_table))
 
 forecast_pib_table
+
