@@ -5,12 +5,12 @@ library(forecast)
 library(dplyr)
 library(fpp2)
 library(tseries)
-
+library(tidyr)
+dir()
 # Cargar datos
-setwd("C:/Users/leire/OneDrive/Escritorio/Bda2/reto5/Nueva carpeta/Reto5_Azul_Claro/Datos-20240913")
-df1 <- read.csv("pib_ipc_paises_punto2.csv")
-exogenas <- read.csv("exogenas_paises_punto2.csv")
-paro<- read.csv("unemployment_germany.csv")
+df1 <- read.csv("Datos-20240913/pib_ipc_paises_punto2.csv")
+exogenas <- read.csv("Datos-20240913/exogenas_paises_punto2.csv")
+paro<- read.csv("Datos-20240913/unemployment_germany.csv")
 
 ########################### FILTRAR Y LIMPIAR DATOS ###########################
 
@@ -383,6 +383,8 @@ forecast_pib <- forecast(modelo_arima_pib, h = 2)
 summary(forecast_pib)
 plot(forecast_pib, main="Predicción del PIB con ARIMA")
 abline(h = 0, col = "red", lty = 2)
+
+
 
 
 
