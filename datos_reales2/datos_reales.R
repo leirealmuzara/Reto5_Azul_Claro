@@ -6,20 +6,21 @@ library(dplyr)
 library(fpp2)
 library(tseries)
 library(readxl)
-#library('readr') ipc <- readr::read_tsv("prc_hicp_manr_tabular.tsv")
+
 
 #mirar si los datos son los mismo, unidades de medidas
 #mirar si son series omogeneas
-setwd("C:/Users/pieza/OneDrive/Escritorio/Bdata2/RETOS/Reto5/Reto5_Azul_Claro/datos_reales2")
+
 # Cargar datos
 pib_ipc <- read.csv("pib_ipc_paises_punto2.csv")
 pib <- read.csv("pib_datos_reales.csv")
 ipc <- read.csv("ipc_datos_reales.csv")
 
-#IPC --> No nos da el crecimiento interanual, por lo que vamos a calcularlo.
+
+#IPC --> Nos da el crecimiento interanual
 #limpiamos df
-ipc <- ipc[,1:2]
 ipc <- ipc[-c(1:9),]
+ipc <- ipc[,-3]
 colnames(ipc) <- c("fecha", "Crecimiento_Interanual")
 str(ipc)
 ipc$Crecimiento_Interanual <- as.numeric(ipc$Crecimiento_Interanual)
@@ -33,21 +34,13 @@ pib$Crecimiento_Interanual <- (pib$Crecimiento_Interanual / lag(pib$Crecimiento_
 
 ########################### SERIES TEMPORALES ###########################
 
-#Mirar las fechas de inicio y final
-ipc_primer_fecha <- min(ipc$fecha, na.rm = TRUE)
-ipc_ultima_fecha <- max(ipc$fecha, na.rm = TRUE)
-pib_primer_fecha <- min(ipc$fecha, na.rm = TRUE)
-pib_ultima_fecha <- max(ipc$fecha, na.rm = TRUE)
-
 # Crear series temporales
-ts_ipc <- ts(ipc$Crecimiento_Interanual, start = c(1996,1), end = c(2024,9), frequency = 12) 
-ts_pib <- ts(pib$Crecimiento_Interanual, start = c(1996,1), end = c(2024,9), frequency = 4)
+ts_ipc <- ts(ipc$Crecimiento_Interanual, start = c(1996,1), end = c(2022,7), frequency = 12) #asi no coge los dos ultimos trimestres
+ts_pib <- ts(pib$Crecimiento_Interanual, start = c(1996,1), end = c(2022,2), frequency = 4)
 
 # Graficar series temporales
 plot(ts_ipc, main="Serie Temporal del IPC en Alemania", ylab="IPC", xlab="Tiempo")
-abline(h = 0, col = "red")
 plot(ts_pib, main="Serie Temporal del PIB en Alemania", ylab="PIB", xlab="Tiempo")
-abline(h = 0, col = "red")
 
 # Revisar la distribución de valores faltantes
 ggplot_na_distribution(ts_ipc)
@@ -59,26 +52,57 @@ sum(is.na(ts_ipc))
 # los que hay son los valores a predecir
 
 
+########################### ANÁLISIS DE AUTOCORRELACIÓN ###########################
+
+# ACF y PACF para IPC
+ts_ipc <- na.omit(ts_ipc)
+ts_pib <- na.omit(ts_pib)
+
+acf(ts_ipc, main = "ACF del IPC") #analiza la estacionalidad
+pacf(ts_ipc, main = "PACF del IPC")
+
+# ACF y PACF para PIB
+acf(ts_pib, main = "ACF del PIB")
+pacf(ts_pib, main = "PACF del PIB")
 
 
+########################### DESCOMPOSICIÓN DE SERIES ###########################
 
+# Descomposición de la serie de IPC
+descomposicion_ipc <- decompose(ts_ipc)
+plot(descomposicion_ipc)
+descomposicion_ipc$seasonal #estacionalidad
+descomposicion_ipc$trend #tendencia
+random_ipc<-descomposicion_ipc$random #residuo para predecir
 
+# Descomposición de la serie de PIB
+descomposicion_pib <- decompose(ts_pib)
+plot(descomposicion_pib)
+descomposicion_pib$seasonal #estacionalidad
+descomposicion_pib$trend #tendencia
+random_pib<-descomposicion_pib$random #residuo para predecir
 
+########################### PRUEBAS DE ESTACIONARIEDAD ###########################
 
+# Prueba ADF para verificar estacionariedad de IPC y PIB
+adf.test(ts_ipc)
+adf.test(ts_pib)
 
+# Diferenciar las series para eliminar tendencia
+ts_ipc <- diff(ts_ipc)
+ts_pib <- diff(ts_pib)
 
+# Verificar nuevamente la estacionariedad
+adf.test(ts_ipc)
+adf.test(ts_pib)
 
+# Graficar series diferenciadas
+plot(ts_ipc, main="IPC Diferenciado")
+plot(ts_pib, main="PIB Diferenciado")
 
-
-
-
-
-
-
-
-
-
-
-
-
+# ACF y PACF para IPC y PIB diferenciados
+acf(ts_ipc, main="ACF IPC Diferenciado")
+pacf(ts_ipc, main="PACF IPC Diferenciado")
+acf(ts_pib, main="ACF PIB Diferenciado")
+pacf(ts_pib, main="PACF PIB Diferenciado")
 
