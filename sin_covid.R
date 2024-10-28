@@ -207,3 +207,8 @@ abline(h = 0, col = "red", lty = 2)
 
 
 
+## CAMBIAR 2020 por 2022
+forecast_pib_table <- data.frame(forecast_pib)
+row.names(forecast_pib_table) <- gsub("2020", "2022", row.names(forecast_pib_table))
+
+forecast_pib_table
