@@ -54,16 +54,6 @@ ui <- fluidPage(
                  conditionalPanel(
                    condition = "input.variable.includes('PIB')",
                    plotOutput("descomposicion_pib_ggplot")
-                 )),
-        
-        tabPanel("Predicciones ARIMA", 
-                 conditionalPanel(
-                   condition = "input.variable.includes('IPC')",
-                   plotlyOutput("pred_arima_ipc_plotly")
-                 ),
-                 conditionalPanel(
-                   condition = "input.variable.includes('PIB')",
-                   plotlyOutput("pred_arima_pib_plotly")
                  ))
       )
     )
@@ -129,40 +119,13 @@ server <- function(input, output, session) {
     autoplot(decompose(serie)) + 
       ggtitle("Descomposición del PIB en Alemania")
   })
-  
-  # Predicciones ARIMA IPC
-  output$pred_arima_ipc_plotly <- renderPlotly({
-    serie <- datos_filtrados_ipc()
-    modelo_arima_ipc <- auto.arima(serie)
-    forecast_ipc <- forecast(modelo_arima_ipc, h = 12)
-    plot_ly(x = time(forecast_ipc$mean), y = forecast_ipc$mean, 
-            type = 'scatter', mode = 'lines', name = "Predicción IPC") %>%
-      layout(title = "Predicción del IPC con ARIMA",
-             xaxis = list(title = "Tiempo"), yaxis = list(title = "IPC"))
-  })
-  
-  # Predicciones ARIMA PIB
-  output$pred_arima_pib_plotly <- renderPlotly({
-    serie <- datos_filtrados_pib()
-    modelo_arima_pib <- auto.arima(serie)
-    forecast_pib <- forecast(modelo_arima_pib, h = 4)
-    plot_ly(x = time(forecast_pib$mean), y = forecast_pib$mean, 
-            type = 'scatter', mode = 'lines', name = "Predicción PIB") %>%
-      layout(title = "Predicción del PIB con ARIMA",
-             xaxis = list(title = "Tiempo"), yaxis = list(title = "PIB"))
-  })
 }
 
 # Ejecutar la aplicación de Shiny
 shinyApp(ui = ui, server = server)
 
 
-
-
-###############################################3
 ##### OTROS 
-
-# Crear UI de la aplicación
 ui <- fluidPage(
   titlePanel("Análisis de Modelos ARIMA para PIB e IPC en Alemania"),
   
@@ -212,7 +175,6 @@ ui <- fluidPage(
   )
 )
 
-# Crear el servidor de Shiny
 server <- function(input, output, session) {
   
   # Filtrar los datos según el rango de años seleccionado
@@ -285,7 +247,6 @@ server <- function(input, output, session) {
   })
 }
 
-# Ejecutar la aplicación de Shiny
 shinyApp(ui = ui, server = server)
 
 

@@ -387,8 +387,8 @@ summary(forecast_pib)
 plot(forecast_pib, main="Predicción del PIB con ARIMA")
 abline(h = 0, col = "red", lty = 2)
 
-
-
-
+ts_pib
+write.csv(ts_pib, file = "seriePIB.csv", row.names = TRUE)
+write.csv(ts_ipc, file = "serieIPC.csv", row.names = TRUE)
 
 
