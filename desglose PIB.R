@@ -128,6 +128,8 @@ peso_importaciones = mean(peso_importaciones_variable) # 32.62208%
 peso_balanza_comercial_variable = desglose$BALANZA_COMERCIAL / desglose$PIB * 100
 peso_balanza_comercial = mean(peso_balanza_comercial_variable) # 4.411641%
 
+porcentaje_total = peso_balanza_comercial + peso_consumo + peso_gasto_publico + peso_inversion + peso_inversion_existencias
+  
 pib_2019 <- desglose[1,]
 
 # COMPROBACIÓN DESGLOSE DEL PIB
