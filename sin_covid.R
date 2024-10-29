@@ -230,11 +230,7 @@ row.names(forecast_pib_table) <- gsub("2020", "2022", row.names(forecast_pib_tab
 
 forecast_pib_table
 
-<<<<<<< HEAD
-=======
-
 forecast_ipc_table <- data.frame(forecast_ipc)
 row.names(forecast_ipc_table) <- gsub("2020", "2022", row.names(forecast_ipc_table))
 
 forecast_ipc_table
->>>>>>> 92b091b9a6acf6aeb34c5f0cd642598ccf7f1673

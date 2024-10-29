@@ -6,11 +6,10 @@ library(dplyr)
 library(fpp2)
 library(tseries)
 library(tidyr)
-<<<<<<< HEAD
-dir()
-=======
 
->>>>>>> de4d3d895feca2781ed8b8ea06168eebf4c7acde
+dir()
+
+
 # Cargar datos
 df1 <- read.csv("Datos-20240913/pib_ipc_paises_punto2.csv")
 exogenas <- read.csv("Datos-20240913/exogenas_paises_punto2.csv")
