@@ -1,4 +1,5 @@
-setwd("C:/RETO/reto 05/Reto5_Azul_Claro")
+getwd()
+setwd("C:/Users/pieza/OneDrive/Escritorio/Bdata2/RETOS/Reto5/Reto5_Azul_Claro/datos_reales2")
 library(readxl)
 library(dplyr)
 dir()
