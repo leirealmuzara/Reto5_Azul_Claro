@@ -222,16 +222,17 @@ plot(forecast_pib_sincovid, main="Predicción del PIB con ARIMA")
 abline(h = 0, col = "red", lty = 2)
 
 
+c(ts_ipc_sincovid,  forecast_ipc_sincovid$mean)
 
 
 ## CAMBIAR 2020 por 2022
-forecast_pib_table_sincovid <- data.frame(forecast_pib_sincovid)
-row.names(forecast_pib_table_sincovid) <- gsub("2020", "2022", row.names(forecast_pib_table_sincovid))
+forecast_pib_sincovid <- data.frame(forecast_pib_sincovid)
+row.names(forecast_pib_sincovid) <- gsub("2020", "2022", row.names(forecast_pib_sincovid))
 
-forecast_pib_table_sincovid
+forecast_pib_sincovid
 
-forecast_ipc_table_sincovid <- data.frame(forecast_ipc_sincovid)
-row.names(forecast_ipc_table_sincovid) <- gsub("2020", "2022", row.names(forecast_ipc_table_sincovid))
+forecast_ipc_sincovid <- data.frame(forecast_ipc_sincovid)
+row.names(forecast_ipc_sincovid) <- gsub("2020", "2022", row.names(forecast_ipc_sincovid))
 
-forecast_ipc_table_sincovid
+forecast_ipc_sincovid
 
