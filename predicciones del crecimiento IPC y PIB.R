@@ -9,9 +9,6 @@ library(fpp2)
 library(tseries)
 library(tidyr)
 
-dir()
-
-
 # Cargar datos
 df1 <- read.csv("Datos-20240913/pib_ipc_paises_punto2.csv")
 exogenas <- read.csv("Datos-20240913/exogenas_paises_punto2.csv")
@@ -82,11 +79,11 @@ ts_indice_bursatil <- ts(df_final$indice_bursatil, start = c(1997,1),end = c(202
 ts_paro <- ts(df_final$paro, start = c(1997,1),end = c(2022,2), frequency = 4)
 
 # Graficar series temporales
-plot(ts_ipc, main="Serie Temporal del IPC en Alemania", ylab="IPC", xlab="Tiempo")
-plot(ts_pib, main="Serie Temporal del PIB en Alemania", ylab="PIB", xlab="Tiempo")
-plot(ts_masa_monetaria, main="Serie Temporal de la masa monetaria en Alemania", ylab="crecimiento", xlab="Tiempo")
-plot(ts_indice_bursatil, main="Serie Temporal del índice bursátil en Alemania", ylab="%", xlab="Tiempo")
-plot(ts_paro, main="Serie Temporal del paro en Alemania", ylab="%", xlab="Tiempo")
+plot(ts_ipc, main="Serie Temporal del IPC en Alemania", ylab="IPC", xlab="Tiempo", col= "#8db41c")
+plot(ts_pib, main="Serie Temporal del PIB en Alemania", ylab="PIB", xlab="Tiempo", col ="#93044e")
+plot(ts_masa_monetaria, main="Serie Temporal de la masa monetaria en Alemania", ylab="crecimiento", xlab="Tiempo", col= "#c88fb2")
+plot(ts_indice_bursatil, main="Serie Temporal del índice bursátil en Alemania", ylab="%", xlab="Tiempo" , col= "#c88fb2")
+plot(ts_paro, main="Serie Temporal del paro en Alemania", ylab="%", xlab="Tiempo", col= "#c88fb2")
 
 
 # Revisar la distribución de valores faltantes
@@ -115,26 +112,26 @@ ts_indice_bursatil <- na.omit(ts_indice_bursatil)
 ts_masa_monetaria <- na.omit(ts_masa_monetaria)
 ts_paro <- na.omit(ts_paro)
 
-acf(ts_ipc, main = "ACF del IPC") #analiza la estacionalidad
-pacf(ts_ipc, main = "PACF del IPC")
+acf(ts_ipc, main = "ACF del IPC", col= "#8db41c") #analiza la estacionalidad
+pacf(ts_ipc, main = "PACF del IPC", col= "#8db41c")
 
-acf(ts_masa_monetaria, main = "ACF de la masa monetaria") 
-pacf(ts_masa_monetaria, main = "PACF de la masa monetaria")
+acf(ts_masa_monetaria, main = "ACF de la masa monetaria", col= "#c88fb2") 
+pacf(ts_masa_monetaria, main = "PACF de la masa monetaria", col= "#c88fb2")
 
-acf(ts_pib, main = "ACF del PIB")
-pacf(ts_pib, main = "PACF del PIB")
+acf(ts_pib, main = "ACF del PIB", col= "#93044e")
+pacf(ts_pib, main = "PACF del PIB", col= "#93044e")
 
-acf(ts_indice_bursatil, main = "ACF del indice bursatil")
-pacf(ts_indice_bursatil, main = "PACF del indice bursatil")
+acf(ts_indice_bursatil, main = "ACF del indice bursatil", col= "#c88fb2")
+pacf(ts_indice_bursatil, main = "PACF del indice bursatil", col= "#c88fb2")
 
-acf(ts_paro, main = "ACF del crecimiento del paro")
-pacf(ts_paro, main = "PACF del crecimiento del paro")
+acf(ts_paro, main = "ACF del crecimiento del paro", col= "#c88fb2")
+pacf(ts_paro, main = "PACF del crecimiento del paro", col= "#c88fb2")
 
 ########################### DESCOMPOSICIÓN DE SERIES 
 
 # Descomposición de la serie de IPC
 descomposicion_ipc <- decompose(ts_ipc)
-plot(descomposicion_ipc)
+plot(descomposicion_ipc, , col= "#8db41c")
 descomposicion_ipc$seasonal #estacionalidad
 
 descomposicion_ipc$trend #tendencia
@@ -142,28 +139,28 @@ random_ipc<-descomposicion_ipc$random #residuo
 
 # Descomposición de la serie de PIB
 descomposicion_pib <- decompose(ts_pib)
-plot(descomposicion_pib)
+plot(descomposicion_pib, col= "#93044e")
 descomposicion_pib$seasonal #estacionalidad
 descomposicion_pib$trend #tendencia
 random_pib<-descomposicion_pib$random #residuo
 
 # Descomposición de la serie de masa monetaria
 descomposicion_tm <- decompose(ts_masa_monetaria)
-plot(descomposicion_tm)
+plot(descomposicion_tm, col= "#c88fb2")
 descomposicion_tm$seasonal #estacionalidad
 descomposicion_tm$trend #tendencia
 random_tm<-descomposicion_tm$random #residuo
 
 # Descomposición de la serie de indice bursatil
 descomposicion_ib <- decompose(ts_indice_bursatil)
-plot(descomposicion_ib)
+plot(descomposicion_ib, col= "#c88fb2")
 descomposicion_ib$seasonal #estacionalidad
 descomposicion_ib$trend #tendencia
 random_ib<-descomposicion_ib$random #residuo
 
 # Descomposición de la serie del paro
 descomposicion_paro <- decompose(ts_paro)
-plot(descomposicion_paro)
+plot(descomposicion_paro, col= "#c88fb2")
 descomposicion_paro$seasonal #estacionalidad
 descomposicion_paro$trend #tendencia
 random_paro<-descomposicion_paro$random #residuo
@@ -208,27 +205,27 @@ adf5<-adf.test(ts_paro)
 kpsstest5 <- kpss.test(ts_paro)
 
 # Graficar series diferenciadas
-plot(ts_ipc_diff, main="IPC Diferenciado")
-plot(ts_pib_diff, main="PIB Diferenciado")
+plot(ts_ipc_diff, main="IPC Diferenciado", col= "#8db41c")
+plot(ts_pib_diff, main="PIB Diferenciado", col= "#93044e")
 
-plot(ts_masa_monetaria, main="IPC Diferenciado")
-plot(ts_indice_bursatil, main="PIB Diferenciado")
+plot(ts_masa_monetaria, main="IPC Diferenciado", col= "#c88fb2")
+plot(ts_indice_bursatil, main="PIB Diferenciado", col= "#c88fb2")
 
-plot(ts_paro, main="Paro Diferenciado")
+plot(ts_paro, main="Paro Diferenciado", col= "#c88fb2")
 
 # ACF y PACF para series diferenciados
-acf(ts_ipc_diff, main="ACF IPC Diferenciado")
-pacf(ts_ipc_diff, main="PACF IPC Diferenciado")
-acf(ts_pib_diff, main="ACF PIB Diferenciado")
-pacf(ts_pib_diff, main="PACF PIB Diferenciado")
+acf(ts_ipc_diff, main="ACF IPC Diferenciado", col= "#8db41c")
+pacf(ts_ipc_diff, main="PACF IPC Diferenciado", col= "#8db41c")
+acf(ts_pib_diff, main="ACF PIB Diferenciado", col= "#93044e")
+pacf(ts_pib_diff, main="PACF PIB Diferenciado", col= "#93044e")
 
-acf(ts_masa_monetaria, main="ACF IPC Diferenciado")
-pacf(ts_masa_monetaria, main="PACF IPC Diferenciado")
-acf(ts_indice_bursatil, main="ACF PIB Diferenciado")
-pacf(ts_indice_bursatil, main="PACF PIB Diferenciado")
+acf(ts_masa_monetaria, main="ACF Masa Monetaria Diferenciado", col= "#c88fb2")
+pacf(ts_masa_monetaria, main="PACF Masa Monetaria Diferenciado", col= "#c88fb2")
+acf(ts_indice_bursatil, main="ACF Indice Bursatil Diferenciado", col= "#c88fb2")
+pacf(ts_indice_bursatil, main="PACF Indice Bursatil Diferenciado", col= "#c88fb2")
 
-acf(ts_paro, main="ACF Paro Diferenciado")
-pacf(ts_paro, main="PACF Paro Diferenciado")
+acf(ts_paro, main="ACF Paro Diferenciado", col= "#c88fb2")
+pacf(ts_paro, main="PACF Paro Diferenciado", col= "#c88fb2")
 
 #Para verificar:
 if (adf1$p.value < 0.05) {print("Serie estacionaria")} else {print("Serie NO estacionaria")}
@@ -390,9 +387,9 @@ head(resultados_ipc) #ARIMA, SARIMA, MEANF
 ##############################################################################
 
 # Verificar los residuos de los modelos ARMA y ARIMA
-checkresiduals(arima_forecast_pib)
-checkresiduals(forecast_sarima_pib)
-checkresiduals(forecast_sarima_ipc)
+checkresiduals(arima_forecast_pib, col= "#93044e")
+checkresiduals(forecast_sarima_pib, col= "#93044e")
+checkresiduals(forecast_sarima_ipc, col= "#8db41c")
 
 
 # Predicción de PIB con ARIMA a 2 trimestres
@@ -400,19 +397,13 @@ modelo_arima_pib <- auto.arima(ts_pib_diff,seasonal = FALSE)
 summary(modelo_arima_pib)
 arima_forecast_pib<-forecast(modelo_arima_pib,h=6)
 summary(arima_forecast_pib)
-plot(arima_forecast_pib, main="Predicción del PIB con ARIMA")
+plot(arima_forecast_pib, main="Predicción del PIB con ARIMA", col= "#93044e")
 abline(h = 0, col = "red", lty = 2)
 
-<<<<<<< HEAD
-modelo_arima_pib <- auto.arima(ts_pib)
-forecast_pib <- forecast(modelo_arima_pib, h = 4)
-summary(forecast_pib)
-plot(forecast_pib, main="Predicción del PIB con ARIMA")
-=======
 # Predicción de PIB con SARIMA a 2 trimestres
 prediccion_sarima_pib <- auto.arima(ts_pib_diff, seasonal = TRUE)
 prediccion_sarima_pib <- forecast(prediccion_sarima_pib, h = 6)
-plot(prediccion_sarima_pib, main="Predicción del PIB con SARIMA")
+plot(prediccion_sarima_pib, main="Predicción del PIB con SARIMA", col= "#93044e")
 abline(h = 0, col = "red", lty = 2)
 
 #nos quedamos con sarima que es el modelo que mejores resultados muestra para el PIB
@@ -424,8 +415,7 @@ abline(h = 0, col = "red", lty = 2)
 
 prediccion_sarima_ipc <- auto.arima(ts_ipc_diff, seasonal = TRUE)
 prediccion_sarima_ipc <- forecast(prediccion_sarima_ipc, h = 6)
-plot(prediccion_sarima_ipc, main="Predicción del IPC con SARIMA")
->>>>>>> 3d25225731b42a5f318c5b5b914ab1e55ede73d1
+plot(prediccion_sarima_ipc, main="Predicción del IPC con SARIMA", col= "#8db41c")
 abline(h = 0, col = "red", lty = 2)
 
 ts_pib
@@ -464,31 +454,31 @@ forecast_arimax_multiple_pib <- forecast(arimax_multiple_pib, xreg = cbind(test_
 
 # Graficos de resultados
 forecast_pib_ipc <- forecast(arimax_pib_ipc, xreg = test_ipc, h = length(test_pib))
-autoplot(forecast_pib_ipc)
+autoplot(forecast_pib_ipc, col= "#93044e")
 modelo_pib_ipc <- forecast_pib_ipc$mean
 
 forecast_pib_bolsa <- forecast(arimax_pib_bolsa, xreg = test_bolsa, h = length(test_pib))
-autoplot(forecast_pib_bolsa)
+autoplot(forecast_pib_bolsa, col= "#93044e")
 modelo_pib_bolsa <- forecast_pib_bolsa$mean
 
 forecast_pib_oferta <- forecast(arimax_pib_oferta, xreg = test_oferta, h = length(test_pib))
-autoplot(forecast_pib_oferta)
+autoplot(forecast_pib_oferta, col= "#93044e")
 modelo_pib_oferta <- forecast_pib_oferta$mean
 
 forecast_pib_paro <- forecast(arimax_pib_paro, xreg = test_paro, h = length(test_pib))
-autoplot(forecast_pib_paro)
+autoplot(forecast_pib_paro, col= "#93044e")
 modelo_pib_paro <- forecast_pib_paro$mean
 
 forecast_pib_multiple <- forecast(forecast_arimax_multiple_pib, xreg = cbind(test_ipc,test_paro,test_oferta, test_bolsa), h = length(test_pib))
-autoplot(forecast_pib_multiple)
+autoplot(forecast_pib_multiple, col= "#93044e")
 modelo_arimax_pib <- forecast_pib_multiple$mean
 
-plot(forecast_pib_ipc, main="Predicción IPC")
-plot(forecast_pib_bolsa, main="Predicción Indice Bursátil")
-plot(forecast_pib_oferta, main="Predicción Masa monetaria")
-plot(forecast_pib_paro, main="Predicción Desempleo")
+plot(forecast_pib_ipc, main="Predicción IPC", col= "#93044e")
+plot(forecast_pib_bolsa, main="Predicción Indice Bursátil", col= "#93044e")
+plot(forecast_pib_oferta, main="Predicción Masa monetaria", col= "#93044e")
+plot(forecast_pib_paro, main="Predicción Desempleo", col= "#93044e")
 
-plot(forecast_pib_multiple, main="Predicción ARIMAX")
+plot(forecast_pib_multiple, main="Predicción ARIMAX", col= "#93044e")
 
 ############################### ACCURACY ARIMAX ###############################
 resultados_arimax <- data.frame(
@@ -602,8 +592,7 @@ print(df_ipc_long)
 #pasar a .csv (habra que cambiar la ruta supongo)
 getwd()
 
-write.csv2(df_pib_long, file = "/Users/leire/OneDrive/Escritorio/Bda2/reto5/Nueva carpeta/Reto5_Azul_Claro/Datos-20240913/pred_real_pib.csv", row.names = FALSE)
+write.csv2(df_pib_long, file = "Datos-20240913/pred_real_pib.csv", row.names = FALSE)
 
-write.csv2(df_ipc_long, file = "/Users/leire/OneDrive/Escritorio/Bda2/reto5/Nueva carpeta/Reto5_Azul_Claro/Datos-20240913/pred_real_ipc.csv", row.names = FALSE)
-
+write.csv2(df_ipc_long, file = "Datos-20240913/pred_real_ipc.csv", row.names = FALSE)
 

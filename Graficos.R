@@ -8,7 +8,6 @@ library(lubridate)
 library(tseries)
 library(fpp2)
 
-# Asegúrate de tener tus datos df_pib y df_ipc disponibles aquí
 
 ui <- fluidPage(
   titlePanel("Visualización del PIB e IPC para Alemania"),
@@ -190,3 +189,4 @@ server <- function(input, output, session) {
 }
 
 shinyApp(ui = ui, server = server)
+
