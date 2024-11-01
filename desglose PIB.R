@@ -1,5 +1,4 @@
 getwd()
-setwd("C:/Users/pieza/OneDrive/Escritorio/Bdata2/RETOS/Reto5/Reto5_Azul_Claro/datos_reales2")
 library(readxl)
 library(dplyr)
 dir()
@@ -211,10 +210,10 @@ library(tidyr)
 crecimiento_long <- crecimiento %>%
   filter(AÑO >= 2013 & AÑO <= 2024) %>%
   pivot_longer(cols = c("PIB", "GASTO_PUBLICO", "CONSUMO", "INVERSION",
-                        "EXPORTACIONES", "IMPORTACIONES"),
+                        "INVERSION_EXISTENCIAS", "BALANZA_COMERCIAL"),
                names_to = "Variable", values_to = "Crecimiento") %>%
-  mutate(Variable = factor(Variable, levels = c("PIB", "CONSUMO", "EXPORTACIONES", 
-                                                "GASTO_PUBLICO", "IMPORTACIONES", "INVERSION")))
+  mutate(Variable = factor(Variable, levels = c("PIB", "CONSUMO", "BALANZA_COMERCIAL", 
+                                                "GASTO_PUBLICO", "INVERSION_EXISTENCIAS", "INVERSION")))
 
 # Crear un dataset separado solo para el PIB
 crecimiento_pib <- crecimiento_long %>%
@@ -279,3 +278,57 @@ ggplot() +
                                "INVERSION_EXISTENCIAS" = "#005a92")) # Colores para cada variable
 
 
+juntar <- merge(crecimiento, desglose, by = "AÑO")
+colnames(juntar)
+
+juntar <- juntar[,-c(8, 9, 11, 16, 17)]
+colnames(juntar) <- c("AÑO", "PAIS", "C_PIB", "C_GASTO_PUBLICO", "C_CONSUMO", "C_INVERSION",
+                      "C_INVERSION_EXISTENCIAS", "C_BALANZA_COMERCIAL", "GASTO_PUBLICO", "CONSUMO", 
+                      "INVERSION", "INVERSION_EXISTENCIAS", "BALANZA_COMERCIAL")
+
+hola <- crecimiento %>%
+  filter(AÑO >= 2013 & AÑO <= 2024) %>%
+  pivot_longer(cols = c("GASTO_PUBLICO", "CONSUMO", "INVERSION",
+                        "INVERSION_EXISTENCIAS", "BALANZA_COMERCIAL"),
+               names_to = "Variable", values_to = "Valor") %>%
+  mutate(Variable = factor(Variable, levels = c("CONSUMO", "BALANZA_COMERCIAL", 
+                                                "GASTO_PUBLICO", "INVERSION_EXISTENCIAS", "INVERSION")))
+hola <- hola[,-c(4,5)]
+
+hola3 <- desglose %>%
+  filter(AÑO >= 2013 & AÑO <= 2024) %>%
+  pivot_longer(cols = c("GASTO_PUBLICO", "CONSUMO", "INVERSION",
+                        "INVERSION_EXISTENCIAS", "BALANZA_COMERCIAL"),
+               names_to = "Variable", values_to = "Valor") %>%
+  mutate(Variable = factor(Variable, levels = c("CONSUMO", "BALANZA_COMERCIAL", 
+                                                "GASTO_PUBLICO", "INVERSION_EXISTENCIAS", "INVERSION")))
+
+hola3 <- hola3[,-c(4,5)]
+hola3 <- hola3 %>%
+  mutate(aporta = Valor / PIB * 100)
+
+str(hola3)
+
+total <- merge(hola, hola3, by = c("AÑO"))
+total <- total[,-c(6:9)]
+
+colnames(total)
+colnames(total) <- c("AÑO", "PAIS", "PIB", "VARIABLE", "VALOR", "APORTA")
+
+total <- total %>%
+  mutate(aportacion_real = VALOR * APORTA / 100)
+
+ggplot() +
+  geom_bar(data = total, aes(x = as.factor(AÑO), y = VALOR, fill = VARIABLE), 
+           stat = "identity", position = "stack") +
+  geom_line(data = crecimiento_pib, aes(x = as.factor(AÑO), y = Crecimiento, group = 1, color = "PIB"), 
+            size = 1) +
+  geom_point(data = crecimiento_pib, aes(x = as.factor(AÑO), y = Crecimiento, color = "PIB"), 
+             size = 2) +
+  geom_text(data = crecimiento_pib, aes(x = as.factor(AÑO), y = Crecimiento, label = round(Crecimiento, 1)), 
+            vjust = -0.5, color = "white") + # Agrega etiquetas con valores de PIB redondeados encima de cada punto
+  scale_color_manual(values = c("PIB" = "#93044e")) + # Color para la línea del PIB
+  labs(title = "Crecimiento por Variable y Año (2013-2024)", x = "Año", y = "Crecimiento (%)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_manual(values = c("CONSUMO" = "#8db41c", "GASTO_PUBLICO" = "#7c7741", "INVERSION" = "#c88fb2", "INVERSION_EXISTENCIAS" = "yellow", "BALANZA_COMERCIAL" = "blue"))
