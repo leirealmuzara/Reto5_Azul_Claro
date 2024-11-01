@@ -2,6 +2,9 @@ library(readr)
 library(dplyr)
 library(plotly)
 
+source("Predicciones_sin_covid.R")
+source("predicciones del crecimiento IPC y PIB.R")
+
 colores_trimestres_pib <- c("#93044e", "#d13d7b", "#f5a3b3", "#ffccd5")  
 colores_trimestres_ipc <- c("#8db41c", "#4b8f0e", "#71c837", "#b9e973")  
 
@@ -71,9 +74,9 @@ trimestres_ipc
 
 
 ##### Usando el Crecimiento Interanual
-
+df1$fecha <- as.Date(paste0(pib$Year, "-", pib$Month, "-01"))
 # PIB - Crecimiento Interanual
-crecimientoInteranual_pib <- plot_ly(pib, x = ~fecha, y = ~Crecimiento_Interanual, type = 'scatter', mode = 'lines',
+crecimientoInteranual_pib <- plot_ly(df1, x = ~fecha, y = ~GDP.billion.currency.units, type = 'scatter', mode = 'lines',
                                      line = list(color = "#93044e")) %>%
   layout(title = "Evolución del PIB Trimestral en Alemania",
          xaxis = list(title = "Fecha"),
@@ -81,7 +84,7 @@ crecimientoInteranual_pib <- plot_ly(pib, x = ~fecha, y = ~Crecimiento_Interanua
 crecimientoInteranual_pib
 
 # Comparación por trimestres del PIB - Crecimiento Interanual
-trimestresInteranual_pib <- plot_ly(pib, x = ~Year, y = ~Crecimiento_Interanual, color = ~factor(Month), colors = colores_trimestres_pib,
+trimestresInteranual_pib <- plot_ly(df1, x = ~Year, y = ~GDP.billion.currency.units, color = ~factor(Month), colors = colores_trimestres_pib,
                                     type = 'scatter', mode = 'lines') %>%
   layout(title = "Comparación de Trimestres por Año (Crecimiento Interanual del PIB)",
          xaxis = list(title = "Año"),
@@ -90,9 +93,9 @@ trimestresInteranual_pib <- plot_ly(pib, x = ~Year, y = ~Crecimiento_Interanual,
 trimestresInteranual_pib
 
 
-
+colnames(df1)
 # IPC - Crecimiento Interanual
-crecimientoInteranual_ipc <- plot_ly(ipc, x = ~fecha, y = ~Crecimiento_Interanual, type = 'scatter', mode = 'lines',
+crecimientoInteranual_ipc <- plot_ly(df1, x = ~fecha, y = ~Consumer.Price.Index..CPI., type = 'scatter', mode = 'lines',
                                      line = list(color = "#8db41c")) %>%
   layout(title = "Evolución del IPC en Alemania",
          xaxis = list(title = "Fecha"),
@@ -100,7 +103,7 @@ crecimientoInteranual_ipc <- plot_ly(ipc, x = ~fecha, y = ~Crecimiento_Interanua
 crecimientoInteranual_ipc
 
 # Crecimiento Interanual del IPC a partir del 2010
-crecimientoInteranual_ipc2010 <- plot_ly(filtrado, x = ~fecha, y = ~Crecimiento_Interanual, type = 'scatter', mode = 'lines',
+crecimientoInteranual_ipc2010 <- plot_ly(filtrado, x = ~fecha, y = ~Consumer.Price.Index..CPI., type = 'scatter', mode = 'lines',
                                          line = list(color = "#8db41c")) %>%
   layout(title = "Evolución del IPC en Alemania",
          xaxis = list(title = "Fecha"),
@@ -108,7 +111,7 @@ crecimientoInteranual_ipc2010 <- plot_ly(filtrado, x = ~fecha, y = ~Crecimiento_
 crecimientoInteranual_ipc2010
 
 # Comparación Trimestral del IPC - Crecimiento Interanual
-trimestresInteranual_ipc <- plot_ly(seleccion_trimestres, x = ~Year, y = ~Crecimiento_Interanual, color = ~trimestre,
+trimestresInteranual_ipc <- plot_ly(seleccion_trimestres, x = ~Year, y = ~Consumer.Price.Index..CPI., color = ~trimestre,
                                     colors = colores_trimestres_ipc, type = 'scatter', mode = 'lines') %>%
   layout(title = "Comparación Trimestral del IPC en Alemania (Crecimiento Interanual)",
          xaxis = list(title = "Año"),
@@ -120,7 +123,7 @@ trimestresInteranual_ipc
 
 
 #### EVOLUCION DEL DESEMPLEO
-dir()
+
 desempleo<-read.csv("Datos-20240913/unemployment_germany.csv")
 desempleo
 colnames(desempleo)
