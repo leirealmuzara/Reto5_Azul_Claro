@@ -241,14 +241,15 @@ ggplot() +
                                "GASTO_PUBLICO" = "#7c7741", "IMPORTACIONES" = "#4b2b4b", 
                                "INVERSION" = "#c88fb2"))
 
-#######################################
-
-# Filtrar datos para años desde 2013 hasta 2024 y excluir "PIB", "EXPORTACIONES", y "IMPORTACIONES" de las variables apiladas
+########################################33
+# Filtrar datos para años desde 2013 hasta 2024 y excluir "PIB" de las variables apiladas
 crecimiento_long <- crecimiento %>%
   filter(AÑO >= 2013 & AÑO <= 2024) %>%
-  pivot_longer(cols = c("PIB", "GASTO_PUBLICO", "CONSUMO", "INVERSION"),
+  pivot_longer(cols = c("PIB", "GASTO_PUBLICO", "CONSUMO", "INVERSION",
+                        "BALANZA_COMERCIAL", "INVERSION_EXISTENCIAS"),
                names_to = "Variable", values_to = "Crecimiento") %>%
-  mutate(Variable = factor(Variable, levels = c("PIB", "CONSUMO", "GASTO_PUBLICO", "INVERSION")))
+  mutate(Variable = factor(Variable, levels = c("PIB", "CONSUMO", "GASTO_PUBLICO", 
+                                                "BALANZA_COMERCIAL", "INVERSION", "INVERSION_EXISTENCIAS")))
 
 # Crear un dataset separado solo para el PIB
 crecimiento_pib <- crecimiento_long %>%
@@ -272,7 +273,10 @@ ggplot() +
   labs(title = "Crecimiento por Variable y Año (2013-2024)", x = "Año", y = "Crecimiento (%)") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  scale_fill_manual(values = c("CONSUMO" = "#8db41c", "GASTO_PUBLICO" = "#7c7741", "INVERSION" = "#c88fb2"))
+  scale_fill_manual(values = c("CONSUMO" = "#8db41c", "GASTO_PUBLICO" = "#7c7741", 
+                               "BALANZA_COMERCIAL" = "#4b2b4b", "INVERSION" = "#c88fb2",
+                               "INVERSION_EXISTENCIAS" = "#005a92")) # Colores para cada variable
+
 
 juntar <- merge(crecimiento, desglose, by = "AÑO")
 colnames(juntar)
