@@ -315,6 +315,7 @@ total <- total[,-c(6, 8, 9)]
 colnames(total)
 colnames(total) <- c("AÑO", "PAIS", "PIB", "VARIABLE", "VALOR", "PIB_TOTAL", "APORTA")
 
+
 total <- total %>%
   mutate(APORTACION_REAL = VALOR * APORTA / 100)
 
