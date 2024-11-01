@@ -7,9 +7,12 @@ library(forecast)
 library(dplyr)
 library(fpp2)
 library(tseries)
+library(tidyr)
+
+dir()
+
 
 # Cargar datos
-
 df1 <- read.csv("Datos-20240913/pib_ipc_paises_punto2.csv")
 exogenas <- read.csv("Datos-20240913/exogenas_paises_punto2.csv")
 paro<- read.csv("Datos-20240913/unemployment_germany.csv")
@@ -418,7 +421,9 @@ prediccion_sarima_ipc <- forecast(prediccion_sarima_ipc, h = 6)
 plot(prediccion_sarima_ipc, main="Predicción del IPC con SARIMA")
 abline(h = 0, col = "red", lty = 2)
 
-
+ts_pib
+write.csv(ts_pib, file = "seriePIB.csv", row.names = TRUE)
+write.csv(ts_ipc, file = "serieIPC.csv", row.names = TRUE)
 
 ############################## MODELOS ARIMAX ##############################
 

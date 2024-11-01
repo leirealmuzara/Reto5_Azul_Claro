@@ -1,7 +1,15 @@
-################################################################################
-# GRAFICOS SIN COVID
+library(shiny)
+library(ggplot2)
+library(plotly)
+library(forecast)
+library(dplyr)
+library(imputeTS)
+library(lubridate)
+library(tseries)
+library(fpp2)
+
 ui <- fluidPage(
-  titlePanel("Análisis de IPC y PIB en Alemania"),
+  titlePanel("Visualización del PIB e IPC para Alemania"),
   
   sidebarLayout(
     sidebarPanel(
@@ -45,24 +53,23 @@ ui <- fluidPage(
                    plotOutput("descomposicion_pib_ggplot")
                  )),
         
-        tabPanel("Predicciones ARIMA", 
+        tabPanel("Residuos del Modelo ARIMA", 
                  conditionalPanel(
                    condition = "input.variable.includes('IPC')",
-                   plotlyOutput("pred_arima_ipc_plotly")
+                   plotOutput("residuos_arima_ipc_ggplot")
                  ),
                  conditionalPanel(
                    condition = "input.variable.includes('PIB')",
-                   plotlyOutput("pred_arima_pib_plotly")
+                   plotOutput("residuos_arima_pib_ggplot")
                  ))
       )
     )
   )
 )
 
-# Crear el servidor de Shiny
 server <- function(input, output, session) {
   
-  # Filtrar los datos según el rango de años seleccionado
+  # Filtrar los datos según el rango de años seleccionado solo cuando se presione el botón de "Actualizar"
   datos_filtrados_ipc <- eventReactive(input$actualizar, {
     window(ts_ipc, start = c(input$rango_anios[1], 1), end = c(input$rango_anios[2], 12))
   })
@@ -74,73 +81,64 @@ server <- function(input, output, session) {
   # Serie Temporal IPC con Plotly
   output$serie_ipc_plotly <- renderPlotly({
     serie <- datos_filtrados_ipc()
-    plot_ly(x = time(serie), y = as.numeric(serie), type = 'scatter', mode = 'lines') %>%
+    plot_ly(x = time(serie), y = as.numeric(serie), type = 'scatter', mode = 'lines', line = list(color = '#8db41c')) %>%
       layout(title = "Serie Temporal del IPC en Alemania",
              xaxis = list(title = "Tiempo"),
-             yaxis = list(title = "IPC"))
+             yaxis = list(title = "Crecimiento Interanual IPC"))
   })
   
   # Serie Temporal PIB con Plotly
   output$serie_pib_plotly <- renderPlotly({
     serie <- datos_filtrados_pib()
-    plot_ly(x = time(serie), y = as.numeric(serie), type = 'scatter', mode = 'lines') %>%
+    plot_ly(x = time(serie), y = as.numeric(serie), type = 'scatter', mode = 'lines', line = list(color = '#93044e')) %>%
       layout(title = "Serie Temporal del PIB en Alemania",
              xaxis = list(title = "Tiempo"),
-             yaxis = list(title = "PIB"))
+             yaxis = list(title = "Crecimiento Interanual PIB"))
   })
   
   # ACF/PACF IPC
   output$acf_pacf_ipc_ggplot <- renderPlot({
     serie <- datos_filtrados_ipc()
     par(mfrow = c(1, 2)) # Dividir panel en dos gráficos
-    acf(serie, main = "ACF IPC")
-    pacf(serie, main = "PACF IPC")
+    acf(serie, main = "ACF IPC", col = "#8db41c")
+    pacf(serie, main = "PACF IPC", col = "#8db41c")
   })
   
   # ACF/PACF PIB
   output$acf_pacf_pib_ggplot <- renderPlot({
     serie <- datos_filtrados_pib()
     par(mfrow = c(1, 2)) # Dividir panel en dos gráficos
-    acf(serie, main = "ACF PIB")
-    pacf(serie, main = "PACF PIB")
+    acf(serie, main = "ACF PIB", col = "#93044e")
+    pacf(serie, main = "PACF PIB", col = "#93044e")
   })
   
   # Descomposición IPC
   output$descomposicion_ipc_ggplot <- renderPlot({
     serie <- datos_filtrados_ipc()
-    autoplot(decompose(serie)) + 
+    autoplot(decompose(serie), color = "#8db41c") + 
       ggtitle("Descomposición del IPC en Alemania")
   })
   
   # Descomposición PIB
   output$descomposicion_pib_ggplot <- renderPlot({
     serie <- datos_filtrados_pib()
-    autoplot(decompose(serie)) + 
+    autoplot(decompose(serie), color = "#93044e") + 
       ggtitle("Descomposición del PIB en Alemania")
   })
   
-  # Predicciones ARIMA IPC
-  output$pred_arima_ipc_plotly <- renderPlotly({
+  # Residuos del modelo ARIMA IPC
+  output$residuos_arima_ipc_ggplot <- renderPlot({
     serie <- datos_filtrados_ipc()
     modelo_arima_ipc <- auto.arima(serie)
-    forecast_ipc <- forecast(modelo_arima_ipc, h = 12)
-    plot_ly(x = time(forecast_ipc$mean), y = forecast_ipc$mean, 
-            type = 'scatter', mode = 'lines', name = "Predicción IPC") %>%
-      layout(title = "Predicción del IPC con ARIMA",
-             xaxis = list(title = "Tiempo"), yaxis = list(title = "IPC"))
+    checkresiduals(modelo_arima_ipc, col = "#8db41c")
   })
   
-  # Predicciones ARIMA PIB
-  output$pred_arima_pib_plotly <- renderPlotly({
+  # Residuos del modelo ARIMA PIB
+  output$residuos_arima_pib_ggplot <- renderPlot({
     serie <- datos_filtrados_pib()
     modelo_arima_pib <- auto.arima(serie)
-    forecast_pib_table <- forecast(modelo_arima_pib, h = 12)
-    plot_ly(x = time(forecast_pib_table$mean), y = forecast_pib_table$mean, 
-            type = 'scatter', mode = 'lines', name = "Predicción PIB") %>%
-      layout(title = "Predicción del PIB con ARIMA",
-             xaxis = list(title = "Tiempo"), yaxis = list(title = "PIB"))
+    checkresiduals(modelo_arima_pib, col = "#93044e")
   })
 }
 
-# Ejecutar la aplicación de Shiny
 shinyApp(ui = ui, server = server)
