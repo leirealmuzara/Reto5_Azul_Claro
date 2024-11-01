@@ -7,14 +7,16 @@ library(fpp2)
 library(tseries)
 library(readxl)
 
+getwd()
+setwd("C:/RETO/reto 05/Reto5_Azul_Claro")
 
 #mirar si los datos son los mismo, unidades de medidas
 #mirar si son series omogeneas
 dir()
 # Cargar datos
-pib_ipc <- read.csv("datos_reales2/pib_ipc_paises_punto2.csv")
-pib <- read.csv("datos_reales2/pib_datos_reales.csv")
-ipc <- read.csv("datos_reales2/ipc_datos_reales.csv")
+pib_ipc <- read.csv("pib_ipc_paises_punto2.csv")
+pib <- read.csv("pib_datos_reales.csv")
+ipc <- read.csv("ipc_datos_reales.csv")
 
 
 #IPC --> Nos da el crecimiento interanual
@@ -49,60 +51,120 @@ ggplot_na_distribution(ts_pib)
 # Comprobar si hay valores faltantes
 sum(is.na(ts_pib))
 sum(is.na(ts_ipc))
-# los que hay son los valores a predecir
 
 
-########################### ANÁLISIS DE AUTOCORRELACIÓN ###########################
 
-# ACF y PACF para IPC
-ts_ipc <- na.omit(ts_ipc)
-ts_pib <- na.omit(ts_pib)
+########## GRÁFICO PIB ####################
 
-acf(ts_ipc, main = "ACF del IPC") #analiza la estacionalidad
-pacf(ts_ipc, main = "PACF del IPC")
+plot(ts_pib)
+last_values <- tail(ts_pib, 4)
+last_positions <- time(ts_pib)[(length(ts_pib) - 3):length(ts_pib)]
 
-# ACF y PACF para PIB
-acf(ts_pib, main = "ACF del PIB")
-pacf(ts_pib, main = "PACF del PIB")
+library(ggplot2)
+library(ggrepel)
+library(dplyr)
+
+df_last <- data.frame(
+  Fecha = last_positions,
+  Valor = last_values,
+  nudge_x = c(0.5, 0.4, 0.5, 0)  
+)
+
+ggplot(data = df_last, aes(x = Fecha, y = Valor)) +
+  geom_line(data = data.frame(Fecha = time(ts_pib), Valor = as.numeric(ts_pib)), aes(x = Fecha, y = Valor), color = "#7c7741") +
+  geom_point(color ="#8db41c") +
+  geom_text_repel(aes(label = round(Valor, 2)), color = "#8db41c", nudge_x = df_last$nudge_x, nudge_y = 0.05) +
+  labs(title = "Crecimiento del PIB real", x = "AÑO", y = "CRECIMIENTO DEL PIB") +
+  theme_minimal()
+
+################### GRÁFICO IPC ######################
+
+plot(ts_ipc)
+last_values_ipc <- tail(ts_ipc, 4)
+last_positions_ipc <- time(ts_ipc)[(length(ts_ipc) - 3):length(ts_ipc)]
+
+library(ggplot2) 
+library(ggrepel)
+library(dplyr)
+
+df_last_ipc <- data.frame(
+  Fecha = last_positions_ipc,
+  Valor = last_values_ipc,
+  nudge_x = c(3, 0.4, 0.5, 0)  
+)
+
+ggplot(data = df_last_ipc, aes(x = Fecha, y = Valor)) +
+  geom_line(data = data.frame(Fecha = time(ts_ipc), Valor = as.numeric(ts_ipc)), aes(x = Fecha, y = Valor), color = "#7c7741") +
+  geom_point(color ="#8db41c") +
+  geom_text_repel(aes(label = round(Valor, 2)), color = "#8db41c", nudge_x = df_last_ipc$nudge_x, nudge_y = 0.05) +
+  labs(title = "Crecimiento del IPC real", x = "AÑO", y = "CRECIMIENTO DEL IPC") +
+  theme_minimal()
+
+####### GRÁFICO PIB 2021 ############################
+
+pib_bien <- pib[-c(129:134),]
+pib_bien <- pib_bien[-c(1:4),]
+
+ts_pib_bien <- ts(pib_bien$Crecimiento_Interanual, start = c(1992,1), end = c(2022,4), frequency = 4)
 
 
-########################### DESCOMPOSICIÓN DE SERIES ###########################
+library(ggplot2)
+library(ggrepel)
+library(dplyr)
 
-# Descomposición de la serie de IPC
-descomposicion_ipc <- decompose(ts_ipc)
-plot(descomposicion_ipc)
-descomposicion_ipc$seasonal #estacionalidad
-descomposicion_ipc$trend #tendencia
-random_ipc<-descomposicion_ipc$random #residuo para predecir
 
-# Descomposición de la serie de PIB
-descomposicion_pib <- decompose(ts_pib)
-plot(descomposicion_pib)
-descomposicion_pib$seasonal #estacionalidad
-descomposicion_pib$trend #tendencia
-random_pib<-descomposicion_pib$random #residuo para predecir
+df <- data.frame(
+  Fecha = time(ts_pib_bien),
+  Valor = as.numeric(ts_pib_bien)
+)
 
-########################### PRUEBAS DE ESTACIONARIEDAD ###########################
+df_last <- data.frame(
+  Fecha = tail(time(ts_pib_bien), 2),  
+  Valor = tail(as.numeric(ts_pib_bien), 2),  
+  nudge_x = c(1.4, 0.4)  
+)
 
-# Prueba ADF para verificar estacionariedad de IPC y PIB
-adf.test(ts_ipc)
-adf.test(ts_pib)
 
-# Diferenciar las series para eliminar tendencia
-ts_ipc <- diff(ts_ipc)
-ts_pib <- diff(ts_pib)
+ggplot(df, aes(x = Fecha, y = Valor)) +
+  geom_line(color = "#7c0e4c") +  
+  geom_point(data = df_last, aes(x = Fecha, y = Valor), color = "#93044e", size = 2) +  
+  geom_text_repel(
+    data = df_last, 
+    aes(x = Fecha, y = Valor, label = round(Valor, 2)), 
+    nudge_x = df_last$nudge_x, 
+    color = "#93440e"
+  ) +
+  labs(
+    title = "Evolución del crecimiento del PIB",
+    x = "Año",
+    y = "Crecimiento del PIB"
+  ) +
+  theme_minimal()
 
-# Verificar nuevamente la estacionariedad
-adf.test(ts_ipc)
-adf.test(ts_pib)
+####### GRÁFICO IPC 2021 ########
 
-# Graficar series diferenciadas
-plot(ts_ipc, main="IPC Diferenciado")
-plot(ts_pib, main="PIB Diferenciado")
+ipc_bien <- ipc[-c(1:21),]
 
-# ACF y PACF para IPC y PIB diferenciados
-acf(ts_ipc, main="ACF IPC Diferenciado")
-pacf(ts_ipc, main="PACF IPC Diferenciado")
-acf(ts_pib, main="ACF PIB Diferenciado")
-pacf(ts_pib, main="PACF PIB Diferenciado")
+ts_ipc_bien <- ts(ipc_bien$Crecimiento_Interanual, start = c(1998,8), end = c(2022,12), frequency = 12)
+
+plot(ts_ipc_bien)
+last_values_ipc <- tail(ts_ipc_bien, 4)
+last_positions_ipc <- time(ts_ipc_bien)[(length(ts_ipc_bien) - 3):length(ts_ipc_bien)]
+
+library(ggplot2) 
+library(ggrepel)
+library(dplyr)
+
+df_last_ipc <- data.frame(
+  Fecha = last_positions_ipc,
+  Valor = last_values_ipc,
+  nudge_x = c(-1, -1, -1, -1)  
+)
+
+ggplot(data = df_last_ipc, aes(x = Fecha, y = Valor)) +
+  geom_line(data = data.frame(Fecha = time(ts_ipc_bien), Valor = as.numeric(ts_ipc_bien)), aes(x = Fecha, y = Valor), color = "#7c7741") +
+  geom_point(color ="#8db41c") +
+  geom_text_repel(aes(label = round(Valor, 2)), color = "#8db41c", nudge_x = df_last_ipc$nudge_x, nudge_y = 0.05) +
+  labs(title = "Crecimiento del IPC real", x = "Año", y = "Crecimiento del IPC") +
+  theme_minimal()
 
