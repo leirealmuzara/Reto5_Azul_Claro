@@ -310,16 +310,20 @@ hola3 <- hola3 %>%
 str(hola3)
 
 total <- merge(hola, hola3, by = c("AÑO"))
-total <- total[,-c(6:9)]
+total <- total[,-c(6, 8, 9)]
 
 colnames(total)
-colnames(total) <- c("AÑO", "PAIS", "PIB", "VARIABLE", "VALOR", "APORTA")
+colnames(total) <- c("AÑO", "PAIS", "PIB", "VARIABLE", "VALOR", "PIB_TOTAL", "APORTA")
+
 
 total <- total %>%
-  mutate(aportacion_real = VALOR * APORTA / 100)
+  mutate(APORTACION_REAL = VALOR * APORTA / 100)
+
+total2 <- total
+total2 <- total2[,-c(3:7)]
 
 ggplot() +
-  geom_bar(data = total, aes(x = as.factor(AÑO), y = VALOR, fill = VARIABLE), 
+  geom_bar(data = total, aes(x = as.factor(AÑO), y = APORTACION_REAL, fill = VARIABLE), 
            stat = "identity", position = "stack") +
   geom_line(data = crecimiento_pib, aes(x = as.factor(AÑO), y = Crecimiento, group = 1, color = "PIB"), 
             size = 1) +
@@ -332,3 +336,31 @@ ggplot() +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   scale_fill_manual(values = c("CONSUMO" = "#8db41c", "GASTO_PUBLICO" = "#7c7741", "INVERSION" = "#c88fb2", "INVERSION_EXISTENCIAS" = "yellow", "BALANZA_COMERCIAL" = "blue"))
+
+ggplot() +
+  geom_bar(data = total, aes(x = as.factor(AÑO), y = VALOR, fill = VARIABLE), 
+           stat = "identity", position = "stack") +
+  geom_text(data = crecimiento_pib, aes(x = as.factor(AÑO), y = Crecimiento, label = round(Crecimiento, 1)), 
+            vjust = -0.5, color = "white") + # Agrega etiquetas con valores de PIB redondeados encima de cada punto
+  scale_color_manual(values = c("PIB" = "#93044e")) + # Color para la línea del PIB
+  labs(title = "Crecimiento por Variable y Año (2013-2024)", x = "Año", y = "Crecimiento (%)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_manual(values = c("CONSUMO" = "#8db41c", "GASTO_PUBLICO" = "#7c7741", "INVERSION" = "#c88fb2", "INVERSION_EXISTENCIAS" = "yellow", "BALANZA_COMERCIAL" = "blue"))
+
+
+###################################################
+
+library(ggplot2)
+library(dplyr)
+
+
+df <- desglose %>%
+  mutate(A_CONSUMO = (CONSUMO / PIB) * 100,
+         A_GASTO_PUBLICO = (GASTO_PUBLICO / PIB) * 100,
+         A_INVERSION = (INVERSION / PIB) * 100,
+         A_INVERSION_EXISTENCIAS = (INVERSION_EXISTENCIAS / PIB) * 100,
+         A_BALANZA_COMERCIAL = (BALANZA_COMERCIAL / PIB) * 100) %>%
+  select(AÑO, A_CONSUMO, A_GASTO_PUBLICO, A_INVERSION, A_INVERSION_EXISTENCIAS, A_BALANZA_COMERCIAL)
+
+
