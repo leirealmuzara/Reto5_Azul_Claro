@@ -418,3 +418,4 @@ getwd()
 write.csv2(dfsin_pib_long_sincovid, file = "Datos-20240913/df_pred_real_pib_sincovid.csv", row.names = FALSE)
 
 write.csv2(dfsin_ipc_long_sincovid, file = "Datos-20240913/df_pred_real_ipc_sincovid.csv", row.names = FALSE)
+
