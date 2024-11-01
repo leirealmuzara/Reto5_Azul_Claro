@@ -403,6 +403,12 @@ summary(arima_forecast_pib)
 plot(arima_forecast_pib, main="Predicción del PIB con ARIMA")
 abline(h = 0, col = "red", lty = 2)
 
+<<<<<<< HEAD
+modelo_arima_pib <- auto.arima(ts_pib)
+forecast_pib <- forecast(modelo_arima_pib, h = 4)
+summary(forecast_pib)
+plot(forecast_pib, main="Predicción del PIB con ARIMA")
+=======
 # Predicción de PIB con SARIMA a 2 trimestres
 prediccion_sarima_pib <- auto.arima(ts_pib_diff, seasonal = TRUE)
 prediccion_sarima_pib <- forecast(prediccion_sarima_pib, h = 6)
@@ -419,6 +425,7 @@ abline(h = 0, col = "red", lty = 2)
 prediccion_sarima_ipc <- auto.arima(ts_ipc_diff, seasonal = TRUE)
 prediccion_sarima_ipc <- forecast(prediccion_sarima_ipc, h = 6)
 plot(prediccion_sarima_ipc, main="Predicción del IPC con SARIMA")
+>>>>>>> 3d25225731b42a5f318c5b5b914ab1e55ede73d1
 abline(h = 0, col = "red", lty = 2)
 
 ts_pib
