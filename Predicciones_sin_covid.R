@@ -115,7 +115,7 @@ plot(ts_pib_diff_sincovid, main="PIB Diferenciado", col= "#93044e")
 acf(ts_ipc_diff_sincovid, main="ACF IPC Diferenciado", col= "#8db41c")
 pacf(ts_ipc_diff_sincovid, main="PACF IPC Diferenciado", col= "#8db41c")
 acf(ts_pib_diff_sincovid, main="ACF PIB Diferenciado", col= "#93044e")
-pacf(ts_pib_diff, main="PACF PIB Diferenciado", col= "#93044e")
+pacf(ts_pib_diff_sincovid, main="PACF PIB Diferenciado", col= "#93044e")
 
 
 #####COMPROBAR ACCURACY#####
@@ -196,8 +196,8 @@ head(resultados_ipc_sincovid) #ARIMA, AR, MA
 
 
 #PIB
-train_pib_sincovid<-window(ts_pib_diff, start = c(1996, 3), end = c(2016, 1))
-test_pib_sincovid<- window(ts_pib_diff, start = c(2016,2), end = c(2019,4))
+train_pib_sincovid<-window(ts_pib_diff_sincovid, start = c(1996, 3), end = c(2016, 1))
+test_pib_sincovid<- window(ts_pib_diff_sincovid, start = c(2016,2), end = c(2019,4))
 
 #naive
 naive_pib_sincovid<-naive(train_pib_sincovid,h=length(test_pib_sincovid))
@@ -278,7 +278,7 @@ checkresiduals(arima_pib_sincovid, col= "#93044e")
 
 
 # Predicción de IPC con ARIMA para los 2 ultimos trimestres de 2022
-sarima_ipc_sincovid <- auto.arima(ts_ipc_diff, seasonal = TRUE)
+sarima_ipc_sincovid <- auto.arima(ts_ipc_diff_sincovid, seasonal = TRUE)
 forecast_sarima_ipc_sincovid <- forecast(sarima_ipc_sincovid, h = 6)
 plot(forecast_sarima_ipc_sincovid, main="Predicción del IPC sin época covid con SARIMA", col= "#8db41c")
 abline(h = 0, col = "red", lty = 2)
@@ -286,7 +286,7 @@ abline(h = 0, col = "red", lty = 2)
 #PIB
 
 # Predicción de PIB con ARIMA a 2 trimestres
-sarima_pib_sincovid <- auto.arima(ts_pib_diff, seasonal = TRUE)
+sarima_pib_sincovid <- auto.arima(ts_pib_diff_sincovid, seasonal = TRUE)
 forecast_sarima_pib_sincovid <- forecast(sarima_pib_sincovid, h = 6)
 plot(forecast_sarima_pib_sincovid, main="Predicción del PIB sin época covid con SARIMA", col= "#93044e")
 abline(h = 0, col = "red", lty = 2)
@@ -353,18 +353,18 @@ Qtr4pib <- c(5.0863883, 5.7397961, 7.9233119, 7.8240488, 7.3187300, 6.2153635, 5
           8.8605619, 7.1357682, 8.0312218, NA)
 
 # Crear el data frame
-predreal_pib_sincovid  <- data.frame(Year = 1997:2021, Qtr1pib, Qtr2pib, Qtr3pib, Qtr4pib)
+df_predreal_pib_sincovid  <- data.frame(Year = 1997:2021, Qtr1pib, Qtr2pib, Qtr3pib, Qtr4pib)
 
 # Imprimir el data frame para visualizar la matriz alineada
-print(predreal_pib_sincovid, row.names = FALSE)
+print(df_predreal_pib_sincovid, row.names = FALSE)
 
 
 # Nombres de las columnas
-colnames(predreal_pib_sincovid) <- c("year","Qtr1", "Qtr2", "Qtr3", "Qtr4")
+colnames(df_predreal_pib_sincovid) <- c("year","Qtr1", "Qtr2", "Qtr3", "Qtr4")
 
 # Reorganizar el data frame para tener una columna para los valores
 library(tidyr)
-dfsin_pib_long_sincovid <- pivot_longer(predreal_pib_sincovid, cols = c("Qtr1", "Qtr2", "Qtr3", "Qtr4"), names_to = "Trimestre", values_to = "PIB")
+dfsin_pib_long_sincovid <- pivot_longer(df_predreal_pib_sincovid, cols = c("Qtr1", "Qtr2", "Qtr3", "Qtr4"), names_to = "Trimestre", values_to = "PIB")
 dfsin_pib_long_sincovid$year[dfsin_pib_long_sincovid$year > 2019] <- 2022
 dfsin_pib_long_sincovid$year[c(97, 98,99,100)] <- 2023
 # Ver el data frame final
@@ -394,18 +394,18 @@ print(dfsin_pib_long_sincovid)
            2.2643490, 1.7441301, 1.6608311, NA)
 
 # Crear el data frame
-predreal_ipc_sincovid  <- data.frame(Year = 1997:2021, Qtr1ipc, Qtr2ipc, Qtr3ipc, Qtr4ipc)
+df_predreal_ipc_sincovid  <- data.frame(Year = 1997:2021, Qtr1ipc, Qtr2ipc, Qtr3ipc, Qtr4ipc)
 
 # Imprimir el data frame para visualizar la matriz alineada
-print(predreal_ipc_sincovid, row.names = FALSE)
+print(df_predreal_ipc_sincovid, row.names = FALSE)
 
 
 # Nombres de las columnas
-colnames(predreal_ipc_sincovid) <- c("year","Qtr1", "Qtr2", "Qtr3", "Qtr4")
+colnames(df_predreal_ipc_sincovid) <- c("year","Qtr1", "Qtr2", "Qtr3", "Qtr4")
 
 # Reorganizar el data frame para tener una columna para los valores
 library(tidyr)
-dfsin_ipc_long_sincovid <- pivot_longer(predreal_ipc_sincovid, cols = c("Qtr1", "Qtr2", "Qtr3", "Qtr4"), names_to = "Trimestre", values_to = "IPC")
+dfsin_ipc_long_sincovid <- pivot_longer(df_predreal_ipc_sincovid, cols = c("Qtr1", "Qtr2", "Qtr3", "Qtr4"), names_to = "Trimestre", values_to = "IPC")
 dfsin_ipc_long_sincovid$year[dfsin_ipc_long_sincovid$year > 2019] <- 2022
 dfsin_ipc_long_sincovid$year[c(97, 98,99,100)] <- 2023
 # Ver el data frame final
@@ -415,6 +415,6 @@ print(dfsin_ipc_long_sincovid)
 #pasar a .csv (habra que cambiar la ruta supongo)
 getwd()
 
-write.csv2(dfsin_pib_long_sincovid, file = "Datos-20240913/pred_real_pib_sincovid.csv", row.names = FALSE)
+write.csv2(dfsin_pib_long_sincovid, file = "Datos-20240913/df_pred_real_pib_sincovid.csv", row.names = FALSE)
 
-write.csv2(dfsin_ipc_long_sincovid, file = "Datos-20240913/pred_real_ipc_sincovid.csv", row.names = FALSE)
+write.csv2(dfsin_ipc_long_sincovid, file = "Datos-20240913/df_pred_real_ipc_sincovid.csv", row.names = FALSE)
