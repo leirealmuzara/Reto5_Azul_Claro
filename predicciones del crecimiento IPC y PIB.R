@@ -592,7 +592,7 @@ df_ipc_long <- df_ipc_long[, c("Año", "Trimestre", "Valor")]
 print(df_ipc_long)
 
 
-#pasar a .csv
+#pasar a .csv (habra que cambiar la ruta supongo)
 getwd()
 
 write.csv2(df_pib_long, file = "/Users/leire/OneDrive/Escritorio/Bda2/reto5/Nueva carpeta/Reto5_Azul_Claro/Datos-20240913/pred_real_pib.csv", row.names = FALSE)

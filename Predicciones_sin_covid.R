@@ -7,6 +7,7 @@ library(fpp2)
 library(tseries)
 
 # Cargar datos
+setwd("C:/Users/leire/OneDrive/Escritorio/Bda2/reto5/Nueva carpeta/Reto5_Azul_Claro")
 df1 <- read.csv("Datos-20240913/pib_ipc_paises_punto2.csv")
 
 ########################### FILTRAR Y LIMPIAR DATOS ###########################
@@ -99,28 +100,28 @@ adf.test(ts_ipc_sincovid)
 adf.test(ts_pib_sincovid)
 
 # Diferenciar las series para eliminar tendencia
-ts_ipc<-diff(ts_ipc_sincovid)
-ts_pib<-diff(ts_pib_sincovid)
+ts_ipc_diff<-diff(ts_ipc_sincovid)
+ts_pib_diff<-diff(ts_pib_sincovid)
 
 # Verificar nuevamente la estacionariedad
-adf.test(ts_ipc_sincovid)
-adf.test(ts_pib_sincovid)
+adf.test(ts_ipc_diff)
+adf.test(ts_pib_diff)
 
 # Graficar series diferenciadas
-plot(ts_ipc_sincovid, main="IPC Diferenciado")
-plot(ts_pib_sincovid, main="PIB Diferenciado")
+plot(ts_ipc_diff, main="IPC Diferenciado")
+plot(ts_pib_diff, main="PIB Diferenciado")
 
 # ACF y PACF para IPC y PIB diferenciados
-acf(ts_ipc_sincovid, main="ACF IPC Diferenciado")
-pacf(ts_ipc_sincovid, main="PACF IPC Diferenciado")
-acf(ts_pib_sincovid, main="ACF PIB Diferenciado")
-pacf(ts_pib_sincovid, main="PACF PIB Diferenciado")
+acf(ts_ipc_diff, main="ACF IPC Diferenciado")
+pacf(ts_ipc_diff, main="PACF IPC Diferenciado")
+acf(ts_pib_diff, main="ACF PIB Diferenciado")
+pacf(ts_pib_diff, main="PACF PIB Diferenciado")
 
 
 #####COMPROBAR ACCURACY#####
 #IPC
-train_ipc_sincovid<-window(random_ipc_sincovid, start = c(1996, 6), end = c(2018, 1))
-test_ipc_sincovid <- window(random_ipc_sincovid, start = c(2019,1), end = c(2019,12))
+train_ipc_sincovid<-window(ts_ipc_diff, start = c(1996, 6), end = c(2016, 1))
+test_ipc_sincovid <- window(ts_ipc_diff, start = c(2016,2), end = c(2019,4))
 
 #naive
 naive_ipc_sincovid<-naive(train_ipc_sincovid,h=length(test_ipc_sincovid))
@@ -131,11 +132,15 @@ snaive_ipc_sincovid<-snaive(train_ipc_sincovid,h=length(test_ipc_sincovid))
 #drift
 drift_ipc_sincovid<-rwf(train_ipc_sincovid,drift=TRUE,h=length(test_ipc_sincovid))
 
+#mean forecast
+meanf_ipc_sincovid<-meanf(train_ipc_sincovid,h=length(test_ipc_sincovid))
+
 #promedio movil (MA)
-ma_ipc_sincovid<-meanf(train_ipc_sincovid,h=length(test_ipc_sincovid))
+ma_ipc_sincovid <- Arima(train_ipc_sincovid, order = c(0,0,1))
+prediccion_ma_ipc_sincovid <- forecast(ma_ipc_sincovid, h = length(test_ipc_sincovid))
 
 #modelo autoregresivo (AR)
-ar_ipc_sincovid<-Arima(train_ipc_sincovid,order = c(1,0,0))
+ar_ipc_sincovid<-Arima(train_ipc_sincovid,order = c(2,0,0))
 ar_ipc_forecast_sincovid<-forecast(ar_ipc_sincovid,h=length(test_ipc_sincovid))
 
 #ARMA
@@ -143,23 +148,56 @@ arma_ipc_sincovid<-Arima(train_ipc_sincovid,order = c(1,0,1))
 arma_ipc_forecast_sincovid<-forecast(arma_ipc_sincovid,h=length(test_ipc_sincovid))
 
 #arima
-modelo_arima_ipc_sincovid <- auto.arima(train_ipc_sincovid)
-summary(modelo_arima_ipc_sincovid)
-arima_forecast_ipc_sincovid<-forecast(modelo_arima_ipc_sincovid,h=length(test_ipc_sincovid))
+arima_ipc_sincovid <- auto.arima(train_ipc_sincovid,seasonal = FALSE)
+summary(arima_ipc_sincovid)
+arima_forecast_ipc_sincovid<-forecast(arima_ipc_sincovid,h=length(test_ipc_sincovid))
+
+#sarima
+sarima_ipc_sincovid <- auto.arima(train_ipc_sincovid, seasonal = TRUE)
+forecast_sarima_ipc_sincovid <- forecast(sarima_ipc_sincovid, h = length(test_ipc_sincovid))
+
 
 #calcular precisión de modelos de predicción
-accuracy_drift_ipc_sincovid<-accuracy(drift_ipc_sincovid,test_ipc_sincovid) #0.33044675 
-accuracy_snaive_ipc_sincovid<-accuracy(snaive_ipc_sincovid,test_ipc_sincovid)#0.5250969 
-accuracy_naive_ipc_sincovid<-accuracy(naive_ipc_sincovid,test_ipc_sincovid)  #0.3304480    
-accuracy_ma_ipc_sincovid<-accuracy(ma_ipc_sincovid,test_ipc_sincovid) #0.32001457 
-accuracy_ar_ipc_sincovid<-accuracy(ar_ipc_forecast_sincovid,test_ipc_sincovid) #0.28267833 
-accuracy_arma_ipc_sincovid<-accuracy(arma_ipc_forecast_sincovid,test_ipc_sincovid) #0.28267206 
-accuracy_arima_ipc_sincovid<-accuracy(arima_forecast_ipc_sincovid,test_ipc_sincovid) #0.2067668 --> ES EL MEJOR  
+resultados_ipc_sincovid <- data.frame(
+  Modelo = character(),
+  MAE = numeric(),
+  RMSE = numeric(),
+  MAPE = numeric(),
+  stringsAsFactors = FALSE
+)
+
+agregar_resultado <- function(nombre, prediccion, real) {
+  metrica <- accuracy(prediccion, real)
+  resultados_ipc_sincovid <<- rbind(resultados_ipc_sincovid, data.frame(
+    Modelo = nombre,
+    MAE = metrica["Test set", "MAE"],
+    RMSE = metrica["Test set", "RMSE"],
+    MAPE = metrica["Test set", "MAPE"]
+  ))
+}
+
+
+# Evaluar cada modelo y almacenar sus resultados
+agregar_resultado("AutoARIMA", arima_forecast_ipc_sincovid, test_ipc_sincovid)
+agregar_resultado("Mean Forecast", meanf_ipc_sincovid, test_ipc_sincovid)
+agregar_resultado("SNaive", snaive_ipc_sincovid, test_ipc_sincovid)
+agregar_resultado("Naive", naive_ipc_sincovid, test_ipc_sincovid)
+agregar_resultado("Random Walk Forecast", drift_ipc_sincovid, test_ipc_sincovid)
+agregar_resultado("AR", ar_ipc_forecast_sincovid, test_ipc_sincovid)
+agregar_resultado("MA", prediccion_ma_ipc_sincovid, test_ipc_sincovid)
+agregar_resultado("ARMA", arma_ipc_forecast_sincovid, test_ipc_sincovid)
+agregar_resultado("SARIMA", forecast_sarima_ipc_sincovid, test_ipc_sincovid)
+
+# Ordenar la tabla de resultados por la métrica
+resultados_ipc_sincovid <- resultados_ipc_sincovid[order(resultados_ipc_sincovid$MAPE), ]
+resultados_ipc_sincovid
+head(resultados_ipc_sincovid) #ARIMA, AR, MA
+
 
 
 #PIB
-train_pib_sincovid<-window(random_pib_sincovid, start = c(1996, 3), end = c(2018, 1))
-test_pib_sincovid<- window(random_pib_sincovid, start = c(2019,1), end = c(2019,4))
+train_pib_sincovid<-window(ts_pib_diff, start = c(1996, 3), end = c(2016, 1))
+test_pib_sincovid<- window(ts_pib_diff, start = c(2016,2), end = c(2019,4))
 
 #naive
 naive_pib_sincovid<-naive(train_pib_sincovid,h=length(test_pib_sincovid))
@@ -170,11 +208,15 @@ snaive_pib_sincovid<-snaive(train_pib_sincovid,h=length(test_pib_sincovid))
 #drift
 drift_pib_sincovid<-rwf(train_pib_sincovid,drift=TRUE,h=length(test_pib_sincovid))
 
+#mean forecast
+meanf_pib_sincovid<-meanf(train_pib_sincovid,h=length(test_pib_sincovid))
+
 #promedio movil (MA)
-ma_pib_sincovid<-meanf(train_pib_sincovid,h=length(test_pib_sincovid))
+ma_pib_sincovid <- Arima(train_pib_sincovid, order = c(0,0,1))
+prediccion_ma_pib_sincovid <- forecast(ma_pib_sincovid, h = length(test_pib_sincovid))
 
 #modelo autoregresivo (AR)
-ar_pib_sincovid<-Arima(train_pib_sincovid,order = c(1,0,0))
+ar_pib_sincovid<-Arima(train_pib_sincovid,order = c(2,0,0))
 ar_pib_forecast_sincovid<-forecast(ar_pib_sincovid,h=length(test_pib_sincovid))
 
 #ARMA
@@ -182,57 +224,136 @@ arma_pib_sincovid<-Arima(train_pib_sincovid,order = c(1,0,1))
 arma_pib_forecast_sincovid<-forecast(arma_pib_sincovid,h=length(test_pib_sincovid))
 
 #arima
-modelo_arima_pib_sincovid <- auto.arima(train_pib_sincovid)
-summary(modelo_arima_pib_sincovid)
-arima_forecast_pib_sincovid<-forecast(modelo_arima_pib_sincovid,h=36)
-summary(arima_forecast_pib_sincovid)
+arima_pib_sincovid <- auto.arima(train_pib_sincovid,seasonal = FALSE)
+summary(arima_pib_sincovid)
+arima_forecast_pib_sincovid<-forecast(arima_pib_sincovid,h=length(test_pib_sincovid))
+
+#sarima
+sarima_pib_sincovid <- auto.arima(train_pib_sincovid, seasonal = TRUE)
+forecast_sarima_pib_sincovid <- forecast(sarima_pib_sincovid, h = length(test_pib_sincovid))
+
 
 #calcular precisión de modelos de predicción
-accuracy_drift_pib_sincovid<-accuracy(drift_pib_sincovid,test_pib_sincovid) #1.265945 
-accuracy_snaive_pib_sincovid<-accuracy(snaive_pib_sincovid,test_pib_sincovid) #1.344134  
-accuracy_naive_pib_sincovid<-accuracy(naive_pib_sincovid,test_pib_sincovid)  #1.266053  
-accuracy_ma_pib_sincovid<-accuracy(ma_pib_sincovid,test_pib_sincovid) #0.8241532  
-accuracy_ar_pib_sincovid<-accuracy(ar_pib_forecast_sincovid,test_pib_sincovid) #0.8113892  
-accuracy_arma_pib_sincovid<-accuracy(arma_pib_forecast_sincovid,test_pib_sincovid) #0.7092525 
-accuracy_arima_pib_sincovid<-accuracy(arima_forecast_pib_sincovid,test_pib_sincovid) #0.6248854  --> ES LO MEJOR 
+resultados_pib_sincovid <- data.frame(
+  Modelo = character(),
+  MAE = numeric(),
+  RMSE = numeric(),
+  MAPE = numeric(),
+  stringsAsFactors = FALSE
+)
+
+agregar_resultado <- function(nombre, prediccion, real) {
+  metrica <- accuracy(prediccion, real)
+  resultados_pib_sincovid <<- rbind(resultados_pib_sincovid, data.frame(
+    Modelo = nombre,
+    MAE = metrica["Test set", "MAE"],
+    RMSE = metrica["Test set", "RMSE"],
+    MAPE = metrica["Test set", "MAPE"]
+  ))
+}
+
+
+# Evaluar cada modelo y almacenar sus resultados
+agregar_resultado("AutoARIMA", arima_forecast_pib_sincovid, test_pib_sincovid)
+agregar_resultado("Mean Forecast", meanf_pib_sincovid, test_pib_sincovid)
+agregar_resultado("SNaive", snaive_pib_sincovid, test_pib_sincovid)
+agregar_resultado("Naive", naive_pib_sincovid, test_pib_sincovid)
+agregar_resultado("Random Walk Forecast", drift_pib_sincovid, test_pib_sincovid)
+agregar_resultado("AR", ar_pib_forecast_sincovid, test_pib_sincovid)
+agregar_resultado("MA", prediccion_ma_pib_sincovid, test_pib_sincovid)
+agregar_resultado("ARMA", arma_pib_forecast_sincovid, test_pib_sincovid)
+agregar_resultado("SARIMA", forecast_sarima_pib_sincovid, test_pib_sincovid)
+
+# Ordenar la tabla de resultados por la métrica
+resultados_pib_sincovid <- resultados_pib_sincovid[order(resultados_pib_sincovid$MAPE), ]
+resultados_pib_sincovid
+head(resultados_pib_sincovid) #NAIVE, SARIMA, ARIMA
+
 
 ################PREDICCIONES######################################
 #IPC
-# Verificar los residuos de los modelos ARIMA
-checkresiduals(modelo_arima_ipc_sincovid)
-#añadir estacionalidad y tendencia a la serie
+# Verificar los residuos de los modelos SARIMA
+checkresiduals(sarima_ipc_sincovid)
+checkresiduals(arima_pib_sincovid)
 
-# Predicción de IPC con ARIMA a 12 meses
-modelo_arima_ipc_sincovid <- auto.arima(ts_ipc_sincovid)
-forecast_ipc_sincovid <- forecast(modelo_arima_ipc_sincovid, h = 4 )
-summary(forecast_ipc_sincovid)
-plot(forecast_ipc_sincovid, main="Predicción del IPC con ARIMA")
+
+# Predicción de IPC con ARIMA para los 2 ultimos trimestres de 2022
+sarima_ipc_sincovid <- auto.arima(ts_ipc_diff, seasonal = TRUE)
+forecast_sarima_ipc_sincovid <- forecast(sarima_ipc_sincovid, h = 6)
+plot(forecast_sarima_ipc_sincovid, main="Predicción del IPC sin época covid con SARIMA")
 abline(h = 0, col = "red", lty = 2)
 
 #PIB
-# Verificar los residuos de los modelos ARIMA
-checkresiduals(modelo_arima_pib_sincovid)
-#añadir estacionalidad y tendencia a la serie
 
-# Predicción de PIB con ARIMA a 12 meses
-modelo_arima_pib_sincovid <- auto.arima(ts_pib_sincovid)
-forecast_pib_sincovid <- forecast(modelo_arima_pib_sincovid, h = 4 )
-summary(forecast_pib_sincovid)
-plot(forecast_pib_sincovid, main="Predicción del PIB con ARIMA")
+# Predicción de PIB con ARIMA a 2 trimestres
+sarima_pib_sincovid <- auto.arima(ts_pib_diff, seasonal = TRUE)
+forecast_sarima_pib_sincovid <- forecast(sarima_pib_sincovid, h = 6)
+plot(forecast_sarima_pib_sincovid, main="Predicción del PIB sin época covid con SARIMA")
 abline(h = 0, col = "red", lty = 2)
 
 
-c(ts_ipc_sincovid,  forecast_ipc_sincovid$mean)
 
 
 ## CAMBIAR 2020 por 2022
-forecast_pib_sincovid <- data.frame(forecast_pib_sincovid)
+forecast_pib_sincovid <- data.frame(forecast_sarima_pib_sincovid)
 row.names(forecast_pib_sincovid) <- gsub("2020", "2022", row.names(forecast_pib_sincovid))
 
 forecast_pib_sincovid
 
-forecast_ipc_sincovid <- data.frame(forecast_ipc_sincovid)
+forecast_ipc_sincovid <- data.frame(forecast_sarima_ipc_sincovid)
 row.names(forecast_ipc_sincovid) <- gsub("2020", "2022", row.names(forecast_ipc_sincovid))
 
 forecast_ipc_sincovid
 
+
+####################################### REVERTIR DIFERENCIACIÓN
+#hay que revertir la estacionalidad para tener las predicciones reales sin los datos diferenciados
+
+#extraer los valores de las predicciones del pib e ipc
+pred_pib_sincovid<-as.data.frame(forecast_pib_sincovid)
+class(pred_pib_sincovid)
+colnames(pred_pib_sincovid)
+pred_pib_sincovid<-pred_pib_sincovid[,-c(2:5)]
+
+
+pred_ipc_sincovid<-as.data.frame(forecast_ipc_sincovid)
+class(pred_ipc_sincovid)
+colnames(pred_ipc_sincovid)
+pred_ipc_sincovid<-pred_ipc_sincovid[,-c(2:5)]
+
+# Crear un nuevo objeto ts con las predicciones
+pib_nuevo <- ts(c(ts_pib_diff, pred_pib_sincovid), start = start(ts_pib_diff), frequency = frequency(ts_pib_diff))
+ipc_nuevo <- ts(c(ts_ipc_diff, pred_ipc), start = start(ts_ipc_diff), frequency = frequency(ts_ipc_diff))
+
+#ultimo valor de la serie original antes de diferenciarla
+ultimo_valor_conocido_pib <- tail(ts_pib, 1)
+ultimo_valor_conocido_ipc <- tail(ts_ipc, 1)
+#predicciones del crecimiento real
+pred_real_pib <- diffinv(pib_nuevo, xi = ultimo_valor_conocido_pib)
+pred_real_ipc <- diffinv(ipc_nuevo, xi = ultimo_valor_conocido_ipc)
+
+#pasar a data frame los datos
+# Crear la matriz de datos (esto es solo un ejemplo basado en lo que compartiste)
+pred_real_pib <- matrix(c(pred_real_pib), nrow = 26, byrow = TRUE)
+
+# Nombres de las columnas
+colnames(pred_real_pib) <- c("Qtr1", "Qtr2", "Qtr3", "Qtr4")
+
+# Años correspondientes
+anios <- 1998:2023  # De 1998 a 2023
+
+# Convertir la matriz a un data frame
+df_pib <- as.data.frame(pred_real_pib)
+
+# Añadir la columna de años
+df_pib$Año <- anios
+
+# Reorganizar el data frame para tener una columna para los valores
+library(tidyr)
+df_pib_long <- pivot_longer(df_pib, cols = c("Qtr1", "Qtr2", "Qtr3", "Qtr4"), names_to = "Trimestre", values_to = "Valor")
+
+# Reorganizar las columnas
+df_pib_long <- df_pib_long[, c("Año", "Trimestre", "Valor")]
+
+# Ver el data frame final
+print(df_pib_long)
