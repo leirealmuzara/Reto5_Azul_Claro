@@ -10,11 +10,11 @@ library(readxl)
 
 #mirar si los datos son los mismo, unidades de medidas
 #mirar si son series omogeneas
-
+dir()
 # Cargar datos
-pib_ipc <- read.csv("pib_ipc_paises_punto2.csv")
-pib <- read.csv("pib_datos_reales.csv")
-ipc <- read.csv("ipc_datos_reales.csv")
+pib_ipc <- read.csv("datos_reales2/pib_ipc_paises_punto2.csv")
+pib <- read.csv("datos_reales2/pib_datos_reales.csv")
+ipc <- read.csv("datos_reales2/ipc_datos_reales.csv")
 
 
 #IPC --> Nos da el crecimiento interanual

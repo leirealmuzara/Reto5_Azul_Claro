@@ -7,6 +7,7 @@ library(fpp2)
 library(tseries)
 
 # Cargar datos
+dir()
 df1 <- read.csv("Datos-20240913/pib_ipc_paises_punto2.csv")
 
 ########################### FILTRAR Y LIMPIAR DATOS ###########################
@@ -215,6 +216,7 @@ checkresiduals(modelo_arima_pib_sincovid)
 #añadir estacionalidad y tendencia a la serie
 
 # Predicción de PIB con ARIMA a 12 meses
+dev.new(width = 7, height = 7)  # Ajusta el tamaño de la ventana gráfica
 modelo_arima_pib_sincovid <- auto.arima(ts_pib_sincovid)
 forecast_pib_sincovid <- forecast(modelo_arima_pib_sincovid, h = 4 )
 summary(forecast_pib_sincovid)
@@ -224,15 +226,44 @@ abline(h = 0, col = "red", lty = 2)
 
 c(ts_ipc_sincovid,  forecast_ipc_sincovid$mean)
 
+length(ts_pib_sincovid)
 
-## CAMBIAR 2020 por 2022
-forecast_pib_sincovid <- data.frame(forecast_pib_sincovid)
-row.names(forecast_pib_sincovid) <- gsub("2020", "2022", row.names(forecast_pib_sincovid))
+# Instala y carga las librerías necesarias
+# install.packages("forecast")
+library(forecast)
 
-forecast_pib_sincovid
+####Sin COVID
 
-forecast_ipc_sincovid <- data.frame(forecast_ipc_sincovid)
-row.names(forecast_ipc_sincovid) <- gsub("2020", "2022", row.names(forecast_ipc_sincovid))
+# Modelo ARIMA usando datos hasta 2019
+modelo_arima_pib_sincovid <- auto.arima(ts_pib_sincovid)
 
-forecast_ipc_sincovid
+# Predicción a 4 trimestres (2022)
+forecast_pib_sincovid <- forecast(modelo_arima_pib_sincovid, h = 4)
+
+# Crear etiquetas para todos los años desde 1996 hasta 2022 omitiendo 2020 y 2021
+eje_x_labels <- as.character(c(1996:2019, 2022))
+eje_x_positions <- c(1996:2020)
+
+# Ajustar márgenes para hacer espacio adicional
+par(mar = c(5, 4, 4, 2) + 0.1)
+
+# Graficar el pronóstico sin etiquetas automáticas en el eje x
+plot(forecast_pib_sincovid, main = "Predicción del PIB con ARIMA",
+     xaxt = "n", xlab = "Tiempo", ylab = "PIB",
+     ylim = range(c(ts_pib_sincovid, forecast_pib_sincovid$mean)))
+
+# Añadir línea vertical sólida en el año 2020 para indicar el salto
+abline(v = 2019.75, col = "blue", lty = 1,lwd=2)  # lty = 1 para línea sólida
+
+# Añadir etiquetas de los años al eje x
+axis(1, at = eje_x_positions, labels = eje_x_labels, las = 2, cex.axis = 0.7)
+
+# Añadir una línea horizontal en el valor 0
+abline(h = 0, col = "red", lty = 2)
+
+# Añadir texto explicativo a la izquierda de la línea en el año 2020
+text(2019.5, max(forecast_pib_sincovid$mean) * 1.75, 
+     "Salto temporal\n(2020-2021 omitidos)", col = "blue", pos = 2)  # pos = 2 para la izquierda
+
+
 
