@@ -7,8 +7,8 @@ library(fpp2)
 library(tseries)
 library(tidyr)
 
-dir()
-
+#setwd()
+#getwd("C:/Users/pieza/OneDrive/Escritorio/Bdata2/RETOS/Reto5/Reto5_Azul_Claro")
 
 # Cargar datos
 df1 <- read.csv("Datos-20240913/pib_ipc_paises_punto2.csv")
@@ -390,5 +390,4 @@ abline(h = 0, col = "red", lty = 2)
 ts_pib
 write.csv(ts_pib, file = "seriePIB.csv", row.names = TRUE)
 write.csv(ts_ipc, file = "serieIPC.csv", row.names = TRUE)
-
 
