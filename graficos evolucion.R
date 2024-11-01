@@ -95,6 +95,17 @@ trimestresInteranual_pib
 
 colnames(df1)
 # IPC - Crecimiento Interanual
+filtrado <- df1 %>% 
+  filter(Year >= 2010 & Year <= 2022)
+seleccion_trimestres <- df1 %>%
+  filter(Month %in% c(3, 6, 9, 12)) %>% 
+  mutate(trimestre = case_when(
+    Month == 3 ~ "Q1",
+    Month == 6 ~ "Q2",
+    Month == 9 ~ "Q3",
+    Month == 12 ~ "Q4"
+  ))
+
 crecimientoInteranual_ipc <- plot_ly(df1, x = ~fecha, y = ~Consumer.Price.Index..CPI., type = 'scatter', mode = 'lines',
                                      line = list(color = "#8db41c")) %>%
   layout(title = "Evolución del IPC en Alemania",
