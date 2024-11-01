@@ -323,37 +323,101 @@ pred_ipc_sincovid<-pred_ipc_sincovid[,-c(2:5)]
 
 # Crear un nuevo objeto ts con las predicciones
 pib_nuevo <- ts(c(ts_pib_diff, pred_pib_sincovid), start = start(ts_pib_diff), frequency = frequency(ts_pib_diff))
-ipc_nuevo <- ts(c(ts_ipc_diff, pred_ipc), start = start(ts_ipc_diff), frequency = frequency(ts_ipc_diff))
+ipc_nuevo <- ts(c(ts_ipc_diff, pred_ipc_sincovid), start = start(ts_ipc_diff), frequency = frequency(ts_ipc_diff))
 
 #ultimo valor de la serie original antes de diferenciarla
-ultimo_valor_conocido_pib <- tail(ts_pib, 1)
-ultimo_valor_conocido_ipc <- tail(ts_ipc, 1)
+ultimo_valor_conocido_pib <- tail(ts_pib_sincovid, 1)
+ultimo_valor_conocido_ipc <- tail(ts_ipc_sincovid, 1)
 #predicciones del crecimiento real
-pred_real_pib <- diffinv(pib_nuevo, xi = ultimo_valor_conocido_pib)
-pred_real_ipc <- diffinv(ipc_nuevo, xi = ultimo_valor_conocido_ipc)
+predreal_pib_sincovid <- diffinv(pib_nuevo, xi = ultimo_valor_conocido_pib)
+predreal_ipc_sincovid <- diffinv(ipc_nuevo, xi = ultimo_valor_conocido_ipc)
+
+class(predreal_ipc_sincovid)
 
 #pasar a data frame los datos
-# Crear la matriz de datos (esto es solo un ejemplo basado en lo que compartiste)
-pred_real_pib <- matrix(c(pred_real_pib), nrow = 26, byrow = TRUE)
+#PIB
+
+# Crear los datos en forma de lista para cada trimestre
+Qtr1pib <- c(NA, 3.8535817, 7.5004310, 7.6932148, 6.9775781, 7.6631410, 7.2063511, 5.2963409, 
+          6.1947424, 6.1761418, 8.7203233, 9.6806240, 6.6227569, 1.2751389, 10.0968066, 
+          9.5668798, 6.3824897, 7.9574835, 8.4666088, 8.1899142, 7.8659623, 9.2526074, 
+          7.0450327, 8.2430645, 8.0312218)
+Qtr2pib <- c(NA, 4.9179981, 7.8256592, 7.6846024, 5.5767840, 8.4533126, 5.5946146, 5.6221906, 
+          6.5570492, 6.5102478, 10.2262440, 8.6832737, 3.8267755, 3.9915260, 10.0637781, 
+          8.2464424, 6.2539820, 7.6202873, 9.1548708, 8.6307773, 7.6897929, 9.7311788, 
+          7.5410044, 7.6290168, 8.0312218)
+Qtr3pib <- c(2.3141983, 8.1205832, 7.6995964, 8.6908578, 7.8607646, 4.9648985, 5.6633619, 
+          7.5667704, 4.8870030, 9.2227033, 10.6012730, 7.8232640, -0.3218256, 8.6193578, 
+          11.7013441, 7.7805538, 5.3889896, 9.8541040, 7.6832972, 8.3131123, 9.5256789, 
+          7.9110496, 8.2288945, 7.4715989, NA)
+Qtr4pib <- c(5.0863883, 5.7397961, 7.9233119, 7.8240488, 7.3187300, 6.2153635, 5.1513338, 
+          8.2560923, 6.2283108, 7.9956421, 9.5957436, 8.6942187, -1.5249488, 9.8688621, 
+          10.0677850, 6.5916556, 7.9192771, 8.3471785, 8.2535984, 9.8217046, 7.6595326, 
+          8.8605619, 7.1357682, 8.0312218, NA)
+
+# Crear el data frame
+predreal_pib_sincovid  <- data.frame(Year = 1997:2021, Qtr1pib, Qtr2pib, Qtr3pib, Qtr4pib)
+
+# Imprimir el data frame para visualizar la matriz alineada
+print(predreal_pib_sincovid, row.names = FALSE)
+
 
 # Nombres de las columnas
-colnames(pred_real_pib) <- c("Qtr1", "Qtr2", "Qtr3", "Qtr4")
-
-# Años correspondientes
-anios <- 1998:2023  # De 1998 a 2023
-
-# Convertir la matriz a un data frame
-df_pib <- as.data.frame(pred_real_pib)
-
-# Añadir la columna de años
-df_pib$Año <- anios
+colnames(predreal_pib_sincovid) <- c("year","Qtr1", "Qtr2", "Qtr3", "Qtr4")
 
 # Reorganizar el data frame para tener una columna para los valores
 library(tidyr)
-df_pib_long <- pivot_longer(df_pib, cols = c("Qtr1", "Qtr2", "Qtr3", "Qtr4"), names_to = "Trimestre", values_to = "Valor")
-
-# Reorganizar las columnas
-df_pib_long <- df_pib_long[, c("Año", "Trimestre", "Valor")]
-
+dfsin_pib_long <- pivot_longer(predreal_pib_sincovid, cols = c("Qtr1", "Qtr2", "Qtr3", "Qtr4"), names_to = "Trimestre", values_to = "PIB")
+dfsin_pib_long$year[dfsin_pib_long$year > 2019] <- 2022
+dfsin_pib_long$year[c(97, 98,99,100)] <- 2023
 # Ver el data frame final
-print(df_pib_long)
+print(dfsin_pib_long)
+
+
+
+#IPC
+
+# Crear los datos en forma de lista para cada trimestre
+# Crear el data frame con los datos
+  Qtr1ipc <- c(NA, 1.6608384, 0.7310436, 0.9867569, 1.7500246, 1.9792399, 1.3281884, 1.3158576, 
+           2.1533107, 2.8306107, 1.1396373, 2.8552412, 3.2350793, -0.2232195, 1.4124364, 
+           3.0163096, 2.4151308, 1.7516042, 1.0204610, 1.0139703, 0.8085780, 2.0908905, 
+           2.4445728, 1.5328676, 1.5696943)
+  Qtr2ipc <- c(NA, 1.6589315, 0.3412648, 1.6364336, 2.3826997, 1.5865631, 1.3213041, 1.3091241, 
+           2.5034811, 2.3342046, 1.5972444, 3.2867339, 1.3165355, 1.0858800, 2.0533832, 
+           2.4456056, 2.2927285, 1.4348047, 0.3122680, 0.4127703, 1.8179888, 1.6937765, 
+           1.8668698, 1.9508976, 1.7447169)
+  Qtr3ipc <- c(1.5325670, 0.7330755, 0.7303698, 1.6309179, 1.9927336, 2.0865631, 1.4385570, 
+           1.3024722, 2.0101242, 2.0961332, 2.1768810, 3.4995449, 0.5408715, 1.4150642, 
+           2.5899415, 2.5346887, 2.0691482, 0.9207829, 0.5133740, 0.3118640, 1.7145691, 
+           1.8897467, 1.5707864, 2.0608399, NA)
+  Qtr4ipc <- c(1.6627504, 0.9917972, 0.5986599, 1.6254448, 2.6196746, 1.0778997, 1.1931582, 
+           2.1556700, 1.8802162, 2.3217624, 2.1633427, 3.5899415, 0.2115631, 1.0830228, 
+           2.5873730, 2.1102973, 2.1784368, 1.1252687, 1.3182029, 0.3110656, 1.9014239, 
+           2.2643490, 1.7441301, 1.6608311, NA)
+
+# Crear el data frame
+predreal_ipc_sincovid  <- data.frame(Year = 1997:2021, Qtr1ipc, Qtr2ipc, Qtr3ipc, Qtr4ipc)
+
+# Imprimir el data frame para visualizar la matriz alineada
+print(predreal_ipc_sincovid, row.names = FALSE)
+
+
+# Nombres de las columnas
+colnames(predreal_ipc_sincovid) <- c("year","Qtr1", "Qtr2", "Qtr3", "Qtr4")
+
+# Reorganizar el data frame para tener una columna para los valores
+library(tidyr)
+dfsin_ipc_long <- pivot_longer(predreal_ipc_sincovid, cols = c("Qtr1", "Qtr2", "Qtr3", "Qtr4"), names_to = "Trimestre", values_to = "IPC")
+dfsin_ipc_long$year[dfsin_ipc_long$year > 2019] <- 2022
+dfsin_ipc_long$year[c(97, 98,99,100)] <- 2023
+# Ver el data frame final
+print(dfsin_ipc_long)
+
+
+#pasar a .csv (habra que cambiar la ruta supongo)
+getwd()
+
+write.csv2(dfsin_pib_long, file = "/Users/leire/OneDrive/Escritorio/Bda2/reto5/Nueva carpeta/Reto5_Azul_Claro/Datos-20240913/pred_real_pib_sincovid.csv", row.names = FALSE)
+
+write.csv2(dfsin_ipc_long, file = "/Users/leire/OneDrive/Escritorio/Bda2/reto5/Nueva carpeta/Reto5_Azul_Claro/Datos-20240913/pred_real_ipc_sincovid.csv", row.names = FALSE)
