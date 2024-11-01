@@ -9,9 +9,6 @@ library(fpp2)
 library(tseries)
 library(tidyr)
 
-#setwd()
-#getwd("C:/Users/pieza/OneDrive/Escritorio/Bdata2/RETOS/Reto5/Reto5_Azul_Claro")
-
 # Cargar datos
 df1 <- read.csv("Datos-20240913/pib_ipc_paises_punto2.csv")
 exogenas <- read.csv("Datos-20240913/exogenas_paises_punto2.csv")
@@ -425,8 +422,6 @@ ts_pib
 write.csv(ts_pib, file = "seriePIB.csv", row.names = TRUE)
 write.csv(ts_ipc, file = "serieIPC.csv", row.names = TRUE)
 
-<<<<<<< HEAD
-=======
 ############################## MODELOS ARIMAX ##############################
 
 train_oferta <- window(ts_masa_monetaria,start=c(1997,1), end=c(2016,1))
@@ -601,5 +596,3 @@ write.csv2(df_pib_long, file = "Datos-20240913/pred_real_pib.csv", row.names = F
 
 write.csv2(df_ipc_long, file = "Datos-20240913/pred_real_ipc.csv", row.names = FALSE)
 
-
->>>>>>> 6c2b433c19c9bb57a669e26b4fe9f3e2baf9ff36
